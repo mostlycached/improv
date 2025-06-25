@@ -22,7 +22,7 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       if (typeof window !== 'undefined' && !(window as any).fabric) {
         try {
           const fabricModule = await import('fabric');
-          (window as any).fabric = fabricModule.fabric || fabricModule.default || fabricModule;
+          (window as any).fabric = fabricModule.default;
         } catch (error) {
           console.error('Failed to load Fabric.js:', error);
         }

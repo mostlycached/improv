@@ -3,20 +3,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Type, Palette, Move, Trash2 } from 'lucide-react';
+import { Type, Check } from 'lucide-react';
+import { AdData } from '@/pages/AdGenerator';
 
 interface FloatingToolbarProps {
   selectedElement: any;
   canvasRef: React.RefObject<any>;
   onElementUpdate: (updates: any) => void;
-  onElementDelete: () => void;
+  onDone: () => void;
+  adData: AdData;
+  setAdData: (data: AdData) => void;
 }
 
 export default function FloatingToolbar({ 
   selectedElement, 
   canvasRef, 
   onElementUpdate, 
-  onElementDelete 
+  onDone,
+  adData,
+  setAdData
 }: FloatingToolbarProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [text, setText] = useState('');
@@ -72,7 +77,30 @@ export default function FloatingToolbar({
       }
       canvasRef.current?.renderAll();
       onElementUpdate({ text: newText });
+      
+      // Update adData based on element type
+      updateAdData(newText, 'text');
     }
+  };
+
+  const updateAdData = (value: any, property: string) => {
+    // Determine which field to update based on the selected element and current text
+    const currentText = selectedElement?.text || (selectedElement?.type === 'group' ? 
+      selectedElement.getObjects().find((obj: any) => obj.type === 'text')?.text : '');
+    
+    const newAdData = { ...adData };
+    
+    if (currentText === adData.title) {
+      if (property === 'text') newAdData.title = value;
+      else if (property === 'color') newAdData.primaryColor = value;
+    } else if (currentText === adData.subtitle) {
+      if (property === 'text') newAdData.subtitle = value;
+    } else if (currentText === adData.ctaText) {
+      if (property === 'text') newAdData.ctaText = value;
+      else if (property === 'color') newAdData.accentColor = value;
+    }
+    
+    setAdData(newAdData);
   };
 
   const handleFontSizeChange = (newSize: number) => {
@@ -104,29 +132,14 @@ export default function FloatingToolbar({
       }
       canvasRef.current?.renderAll();
       onElementUpdate({ color: newColor });
+      
+      // Update adData
+      updateAdData(newColor, 'color');
     }
   };
 
-  const handleDelete = () => {
-    if (selectedElement && canvasRef.current) {
-      canvasRef.current.remove(selectedElement);
-      canvasRef.current.renderAll();
-      onElementDelete();
-    }
-  };
-
-  const handleBringToFront = () => {
-    if (selectedElement && canvasRef.current) {
-      canvasRef.current.bringToFront(selectedElement);
-      canvasRef.current.renderAll();
-    }
-  };
-
-  const handleSendToBack = () => {
-    if (selectedElement && canvasRef.current) {
-      canvasRef.current.sendToBack(selectedElement);
-      canvasRef.current.renderAll();
-    }
+  const handleDone = () => {
+    onDone();
   };
 
   if (!isVisible || !selectedElement) return null;
@@ -200,33 +213,14 @@ export default function FloatingToolbar({
 
       <Separator className="my-3" />
 
-      <div className="flex items-center gap-1">
+      <div className="flex justify-end">
         <Button
-          variant="outline"
+          onClick={handleDone}
+          className="bg-green-600 hover:bg-green-700 text-white h-8 px-4"
           size="sm"
-          onClick={handleBringToFront}
-          className="h-7 px-2"
         >
-          <Move className="w-3 h-3 mr-1" />
-          Front
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSendToBack}
-          className="h-7 px-2"
-        >
-          <Move className="w-3 h-3 mr-1" />
-          Back
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleDelete}
-          className="h-7 px-2 ml-auto"
-        >
-          <Trash2 className="w-3 h-3 mr-1" />
-          Delete
+          <Check className="w-3 h-3 mr-1" />
+          Done
         </Button>
       </div>
     </div>

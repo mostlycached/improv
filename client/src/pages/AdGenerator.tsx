@@ -50,7 +50,7 @@ export default function AdGenerator() {
     console.log('Element updated:', updates);
   };
 
-  const handleElementDelete = () => {
+  const handleDone = () => {
     setSelectedElement(null);
   };
 
@@ -129,7 +129,9 @@ export default function AdGenerator() {
         selectedElement={selectedElement}
         canvasRef={canvasRef}
         onElementUpdate={handleElementUpdate}
-        onElementDelete={handleElementDelete}
+        onDone={handleDone}
+        adData={adData}
+        setAdData={setAdData}
       />
 
       {/* Loading Overlay */}
