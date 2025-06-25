@@ -94,7 +94,12 @@ The application is configured for Replit deployment with:
 ## Changelog
 ```
 Changelog:
-- June 25, 2025. Initial setup
+- June 25, 2025. Initial setup and Azure OpenAI integration
+  - Connected GPT-4o for content generation via Azure endpoint
+  - Connected gpt-image-1 for background image generation via Azure endpoint
+  - Implemented 4 layout options (centered, left-aligned, bottom-overlay, split-screen)
+  - Added URL scraping and auto-generation features
+  - Created single-page ad generator interface
 ```
 
 ## User Preferences

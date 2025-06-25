@@ -52,11 +52,7 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Azure GPT-4o API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      });
+
       throw new Error(`Azure GPT-4o API Error: ${response.status} - ${errorText}`);
     }
 
