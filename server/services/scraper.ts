@@ -48,49 +48,31 @@ export async function scrapeUrl(url: string): Promise<ScrapedContent> {
             
             const $ = cheerio.load(data);
             
-            let title = $('title').text().trim();
-            if (!title) {
-              title = $('h1').first().text().trim();
-            }
+            // Remove scripts, styles, and other non-content elements
+            $('script, style, nav, header, footer, aside, .nav, .menu, .sidebar, .cookie-banner, .newsletter, .advertisement').remove();
             
-            let description = $('meta[name="description"]').attr('content') || 
-                             $('meta[property="og:description"]').attr('content') || 
-                             $('meta[name="twitter:description"]').attr('content') || '';
+            // Get all the text content from the page
+            let rawContent = $('body').text().trim();
             
-            $('script, style, nav, header, footer, aside, .nav, .menu, .sidebar').remove();
-            
-            let content = '';
-            const contentSelectors = [
-              'main', 'article', '.content', '.post', '.entry', 
-              '.product-description', '.description', 'section'
-            ];
-            
-            for (const selector of contentSelectors) {
-              const element = $(selector).first();
-              if (element.length && element.text().trim().length > 100) {
-                content = element.text().trim();
-                break;
-              }
-            }
-            
-            if (!content) {
-              content = $('body').text().trim();
-            }
-            
-            content = content
+            // Clean up whitespace but preserve some structure
+            rawContent = rawContent
               .replace(/\s+/g, ' ')
               .replace(/\n+/g, ' ')
               .trim()
-              .slice(0, 2000);
+              .slice(0, 3000); // Increase limit to get more content
+            
+            console.log('=== RAW SCRAPED CONTENT ===');
+            console.log('Content length:', rawContent.length);
+            console.log('First 1000 chars:', rawContent.substring(0, 1000));
+            console.log('===========================');
 
             const result = {
-              title: title || 'Business Product',
-              description: description.trim() || 'Professional solution for your needs',
-              content: content || 'Professional business solution designed to meet your specific requirements.',
+              title: 'Website Content',
+              description: 'Scraped website content for analysis',
+              content: rawContent,
               url: url
             };
 
-            console.log('Scraping successful:', result.title);
             resolve(result);
           } catch (parseError: any) {
             console.error('Parse error:', parseError.message);
