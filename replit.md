@@ -104,6 +104,9 @@ Changelog:
   - Added floating toolbar for direct preview editing
   - Implemented two-way data binding between toolbar and left panel
   - Added 60-second timeout for image generation
+  - Fixed web scraper with proper gzip/deflate decompression for authentic content extraction
+  - Resolved Azure OpenAI JSON parsing issues with markdown code block handling
+  - Canvas now displays ad previews with SimpleCanvas fallback implementation
 ```
 
 ## User Preferences
