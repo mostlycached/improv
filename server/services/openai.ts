@@ -1,8 +1,13 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
+// Azure OpenAI configuration
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || "default_key",
+  baseURL: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai",
+  defaultQuery: { "api-version": "2025-01-01-preview" },
+  defaultHeaders: {
+    "api-key": process.env.OPENAI_API_KEY || "default_key",
+  },
 });
 
 export interface GeneratedContent {
@@ -16,7 +21,7 @@ export interface GeneratedContent {
 export async function generateAdContent(scrapedContent: string): Promise<GeneratedContent> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // Azure deployment name
       messages: [
         {
           role: "system",
