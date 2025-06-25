@@ -88,16 +88,19 @@ export async function generateBackgroundImage(description: string, style: string
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2024-02-15-preview", {
+    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": process.env.OPENAI_IMAGE_API_KEY || "",
+        "Authorization": `Bearer ${process.env.OPENAI_IMAGE_API_KEY}`,
       },
       body: JSON.stringify({
         prompt: prompt,
-        n: 1,
-        size: "1024x1024"
+        size: "1024x1024",
+        quality: "medium",
+        output_compression: 100,
+        output_format: "png",
+        n: 1
       }),
       signal: controller.signal,
     });
@@ -116,6 +119,15 @@ export async function generateBackgroundImage(description: string, style: string
 
     const data = await response.json();
     console.log('Background image generated successfully');
+    
+    // Handle base64 response from Azure OpenAI
+    const base64Image = data.data?.[0]?.b64_json;
+    if (base64Image) {
+      // Convert base64 to data URL
+      return `data:image/png;base64,${base64Image}`;
+    }
+    
+    // Fallback to URL if available
     return data.data?.[0]?.url || "";
   } catch (error: any) {
     if (error.name === 'AbortError') {
