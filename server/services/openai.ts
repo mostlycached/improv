@@ -74,13 +74,10 @@ export async function generateBackgroundImage(description: string, style: string
       prompt: prompt,
       n: 1,
       size: "1024x1024",
-      quality: "standard",
+      quality: "high",
     };
     
-    console.log('Sending image generation request:', {
-      url: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview",
-      body: requestBody
-    });
+
 
     const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
       method: "POST",
@@ -93,17 +90,10 @@ export async function generateBackgroundImage(description: string, style: string
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Image generation failed:`, {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        body: errorText
-      });
       throw new Error(`Azure Image API Error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('Image generation success:', data);
     return data.data?.[0]?.url || "";
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
