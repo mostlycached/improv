@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Wand2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ControlPanel from "@/components/ControlPanel";
-import AdCanvas from "@/components/AdCanvas";
+import FabricCanvas from "@/components/FabricCanvas";
+import FloatingToolbar from "@/components/FloatingToolbar";
 
 export interface AdData {
   title: string;
@@ -26,11 +27,31 @@ export default function AdGenerator() {
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedElement, setSelectedElement] = useState<any>(null);
+  const canvasRef = useRef<any>(null);
 
   const handleExport = () => {
-    // This will be handled by the AdCanvas component
-    const event = new CustomEvent('export-ad');
-    window.dispatchEvent(event);
+    // Export will be handled by the FabricCanvas component
+    if (canvasRef.current) {
+      const dataURL = canvasRef.current.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: 2,
+      });
+      const link = document.createElement('a');
+      link.download = 'ad-design.png';
+      link.href = dataURL;
+      link.click();
+    }
+  };
+
+  const handleElementUpdate = (updates: any) => {
+    // Handle element updates from floating toolbar
+    console.log('Element updated:', updates);
+  };
+
+  const handleElementDelete = () => {
+    setSelectedElement(null);
   };
 
   return (
@@ -75,7 +96,12 @@ export default function AdGenerator() {
           </div>
 
           <div className="flex-1 flex items-center justify-center p-8">
-            <AdCanvas adData={adData} />
+            <FabricCanvas 
+              ref={canvasRef}
+              adData={adData} 
+              onElementSelect={setSelectedElement}
+              selectedElement={selectedElement}
+            />
           </div>
 
           {/* Status Bar */}
@@ -97,6 +123,14 @@ export default function AdGenerator() {
           </div>
         </div>
       </div>
+
+      {/* Floating Toolbar */}
+      <FloatingToolbar 
+        selectedElement={selectedElement}
+        canvasRef={canvasRef}
+        onElementUpdate={handleElementUpdate}
+        onElementDelete={handleElementDelete}
+      />
 
       {/* Loading Overlay */}
       {isGenerating && (

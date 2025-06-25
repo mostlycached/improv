@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { AdData } from '@/pages/AdGenerator';
-
-// Dynamic import for fabric
-declare const fabric: any;
 
 interface FabricCanvasProps {
   adData: AdData;
@@ -10,18 +7,25 @@ interface FabricCanvasProps {
   selectedElement: any;
 }
 
-export default function FabricCanvas({ adData, onElementSelect, selectedElement }: FabricCanvasProps) {
+const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSelect, selectedElement }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<any>(null);
   const [isReady, setIsReady] = useState(false);
   const [fabricLoaded, setFabricLoaded] = useState(false);
 
+  // Expose canvas methods to parent component
+  useImperativeHandle(ref, () => fabricRef.current);
+
   // Load Fabric.js dynamically
   useEffect(() => {
     const loadFabric = async () => {
-      if (typeof window !== 'undefined' && !window.fabric) {
-        const fabricModule = await import('fabric');
-        window.fabric = fabricModule.fabric;
+      if (typeof window !== 'undefined' && !(window as any).fabric) {
+        try {
+          const fabricModule = await import('fabric');
+          (window as any).fabric = fabricModule.fabric || fabricModule.default || fabricModule;
+        } catch (error) {
+          console.error('Failed to load Fabric.js:', error);
+        }
       }
       setFabricLoaded(true);
     };
@@ -29,10 +33,11 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
   }, []);
 
   useEffect(() => {
-    if (!canvasRef.current || fabricRef.current || !fabricLoaded || !window.fabric) return;
+    if (!canvasRef.current || fabricRef.current || !fabricLoaded || !(window as any).fabric) return;
 
     // Initialize Fabric.js canvas
-    const canvas = new window.fabric.Canvas(canvasRef.current, {
+    const fabric = (window as any).fabric;
+    const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 600,
       backgroundColor: '#ffffff',
@@ -64,9 +69,10 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
 
   // Update canvas when adData changes
   useEffect(() => {
-    if (!fabricRef.current || !isReady || !window.fabric) return;
+    if (!fabricRef.current || !isReady || !(window as any).fabric) return;
 
     const canvas = fabricRef.current;
+    const fabric = (window as any).fabric;
     
     // Clear existing objects
     canvas.clear();
@@ -74,7 +80,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
 
     // Apply background image if exists
     if (adData.backgroundImageUrl) {
-      window.fabric.Image.fromURL(adData.backgroundImageUrl, (img: any) => {
+      fabric.Image.fromURL(adData.backgroundImageUrl, (img: any) => {
         const scaleX = canvas.width / img.width;
         const scaleY = canvas.height / img.height;
         const scale = Math.max(scaleX, scaleY);
@@ -95,34 +101,34 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     }
 
     // Add elements based on layout
-    renderLayout(canvas, adData);
+    renderLayout(canvas, adData, fabric);
   }, [adData, isReady, fabricLoaded]);
 
-  const renderLayout = (canvas: any, data: AdData) => {
+  const renderLayout = (canvas: any, data: AdData, fabric: any) => {
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
     switch (data.layout) {
       case 'centered':
-        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight);
+        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'left-aligned':
-        renderLeftAlignedLayout(canvas, data, canvasWidth, canvasHeight);
+        renderLeftAlignedLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'bottom-overlay':
-        renderBottomOverlayLayout(canvas, data, canvasWidth, canvasHeight);
+        renderBottomOverlayLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'split-screen':
-        renderSplitScreenLayout(canvas, data, canvasWidth, canvasHeight);
+        renderSplitScreenLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       default:
-        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight);
+        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
     }
   };
 
-  const renderCenteredLayout = (canvas: any, data: AdData, width: number, height: number) => {
+  const renderCenteredLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     // Title
-    const title = new window.fabric.Text(data.title, {
+    const title = new fabric.Text(data.title, {
       left: width / 2,
       top: height / 3,
       originX: 'center',
@@ -134,7 +140,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Subtitle
-    const subtitle = new window.fabric.Text(data.subtitle, {
+    const subtitle = new fabric.Text(data.subtitle, {
       left: width / 2,
       top: height / 2,
       originX: 'center',
@@ -145,7 +151,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // CTA Button
-    const buttonRect = new window.fabric.Rect({
+    const buttonRect = new fabric.Rect({
       left: width / 2 - 100,
       top: height * 2 / 3 - 25,
       width: 200,
@@ -155,7 +161,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       ry: 8,
     });
 
-    const buttonText = new window.fabric.Text(data.ctaText, {
+    const buttonText = new fabric.Text(data.ctaText, {
       left: width / 2,
       top: height * 2 / 3,
       originX: 'center',
@@ -167,7 +173,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Group button elements
-    const buttonGroup = new window.fabric.Group([buttonRect, buttonText], {
+    const buttonGroup = new fabric.Group([buttonRect, buttonText], {
       left: width / 2,
       top: height * 2 / 3,
       originX: 'center',
@@ -177,11 +183,11 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     canvas.add(title, subtitle, buttonGroup);
   };
 
-  const renderLeftAlignedLayout = (canvas: any, data: AdData, width: number, height: number) => {
+  const renderLeftAlignedLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const leftPadding = 60;
 
     // Title
-    const title = new window.fabric.Text(data.title, {
+    const title = new fabric.Text(data.title, {
       left: leftPadding,
       top: height / 4,
       fontSize: 42,
@@ -191,7 +197,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Subtitle
-    const subtitle = new window.fabric.Text(data.subtitle, {
+    const subtitle = new fabric.Text(data.subtitle, {
       left: leftPadding,
       top: height / 2,
       fontSize: 20,
@@ -200,7 +206,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // CTA Button
-    const buttonRect = new window.fabric.Rect({
+    const buttonRect = new fabric.Rect({
       left: leftPadding,
       top: height * 3 / 4,
       width: 180,
@@ -210,7 +216,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       ry: 6,
     });
 
-    const buttonText = new window.fabric.Text(data.ctaText, {
+    const buttonText = new fabric.Text(data.ctaText, {
       left: leftPadding + 90,
       top: height * 3 / 4 + 22,
       originX: 'center',
@@ -221,7 +227,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       fontWeight: 'bold',
     });
 
-    const buttonGroup = new window.fabric.Group([buttonRect, buttonText], {
+    const buttonGroup = new fabric.Group([buttonRect, buttonText], {
       left: leftPadding,
       top: height * 3 / 4,
     });
@@ -229,9 +235,9 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     canvas.add(title, subtitle, buttonGroup);
   };
 
-  const renderBottomOverlayLayout = (canvas: any, data: AdData, width: number, height: number) => {
+  const renderBottomOverlayLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     // Create overlay background
-    const overlay = new window.fabric.Rect({
+    const overlay = new fabric.Rect({
       left: 0,
       top: height * 2 / 3,
       width: width,
@@ -241,7 +247,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Title
-    const title = new window.fabric.Text(data.title, {
+    const title = new fabric.Text(data.title, {
       left: width / 2,
       top: height * 3 / 4,
       originX: 'center',
@@ -253,7 +259,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Subtitle
-    const subtitle = new window.fabric.Text(data.subtitle, {
+    const subtitle = new fabric.Text(data.subtitle, {
       left: width / 2,
       top: height * 5 / 6,
       originX: 'center',
@@ -264,7 +270,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // CTA Button
-    const buttonRect = new window.fabric.Rect({
+    const buttonRect = new fabric.Rect({
       left: width - 180,
       top: height - 60,
       width: 150,
@@ -274,7 +280,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       ry: 5,
     });
 
-    const buttonText = new window.fabric.Text(data.ctaText, {
+    const buttonText = new fabric.Text(data.ctaText, {
       left: width - 105,
       top: height - 40,
       originX: 'center',
@@ -285,7 +291,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       fontWeight: 'bold',
     });
 
-    const buttonGroup = new window.fabric.Group([buttonRect, buttonText], {
+    const buttonGroup = new fabric.Group([buttonRect, buttonText], {
       left: width - 180,
       top: height - 60,
     });
@@ -293,11 +299,11 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     canvas.add(overlay, title, subtitle, buttonGroup);
   };
 
-  const renderSplitScreenLayout = (canvas: any, data: AdData, width: number, height: number) => {
+  const renderSplitScreenLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const splitX = width / 2;
 
     // Left section background
-    const leftBg = new window.fabric.Rect({
+    const leftBg = new fabric.Rect({
       left: 0,
       top: 0,
       width: splitX,
@@ -307,7 +313,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Title on left
-    const title = new window.fabric.Text(data.title, {
+    const title = new fabric.Text(data.title, {
       left: splitX / 2,
       top: height / 3,
       originX: 'center',
@@ -319,7 +325,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // Subtitle on right
-    const subtitle = new window.fabric.Text(data.subtitle, {
+    const subtitle = new fabric.Text(data.subtitle, {
       left: splitX + (splitX / 2),
       top: height / 2,
       originX: 'center',
@@ -330,7 +336,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
     });
 
     // CTA Button on right
-    const buttonRect = new window.fabric.Rect({
+    const buttonRect = new fabric.Rect({
       left: splitX + (splitX / 2) - 80,
       top: height * 2 / 3 - 22,
       width: 160,
@@ -340,7 +346,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       ry: 6,
     });
 
-    const buttonText = new window.fabric.Text(data.ctaText, {
+    const buttonText = new fabric.Text(data.ctaText, {
       left: splitX + (splitX / 2),
       top: height * 2 / 3,
       originX: 'center',
@@ -351,7 +357,7 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       fontWeight: 'bold',
     });
 
-    const buttonGroup = new window.fabric.Group([buttonRect, buttonText], {
+    const buttonGroup = new fabric.Group([buttonRect, buttonText], {
       left: splitX + (splitX / 2),
       top: height * 2 / 3,
       originX: 'center',
@@ -399,11 +405,8 @@ export default function FabricCanvas({ adData, onElementSelect, selectedElement 
       </button>
     </div>
   );
-}
+});
 
-// Add fabric to window for dynamic loading
-declare global {
-  interface Window {
-    fabric: any;
-  }
-}
+FabricCanvas.displayName = 'FabricCanvas';
+
+export default FabricCanvas;
