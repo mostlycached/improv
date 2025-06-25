@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import https from 'https';
 import { URL } from 'url';
+import zlib from 'zlib';
 
 export interface ScrapedContent {
   title: string;
@@ -24,9 +25,8 @@ export async function scrapeUrl(url: string): Promise<ScrapedContent> {
         method: 'GET',
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
           'Accept-Language': 'en-US,en;q=0.9',
-          'Accept-Encoding': 'gzip, deflate',
           'Connection': 'close'
         },
         timeout: 15000,
@@ -36,17 +36,30 @@ export async function scrapeUrl(url: string): Promise<ScrapedContent> {
       const client = isHttps ? https : require('http');
       
       const req = client.request(options, (res: any) => {
-        let data = '';
+        let responseStream = res;
         
-        res.on('data', (chunk: any) => {
-          data += chunk;
+        // Handle decompression
+        if (res.headers['content-encoding'] === 'gzip') {
+          responseStream = res.pipe(zlib.createGunzip());
+        } else if (res.headers['content-encoding'] === 'deflate') {
+          responseStream = res.pipe(zlib.createInflate());
+        } else if (res.headers['content-encoding'] === 'br') {
+          responseStream = res.pipe(zlib.createBrotliDecompress());
+        }
+        
+        let html = '';
+        responseStream.setEncoding('utf8');
+        
+        responseStream.on('data', (chunk: string) => {
+          html += chunk;
         });
         
-        res.on('end', () => {
+        responseStream.on('end', () => {
+          
           try {
-            console.log('HTML received, length:', data.length);
+            console.log('HTML received, length:', html.length);
             
-            const $ = cheerio.load(data);
+            const $ = cheerio.load(html);
             
             // Remove scripts, styles, and other non-content elements
             $('script, style, nav, header, footer, aside, .nav, .menu, .sidebar, .cookie-banner, .newsletter, .advertisement').remove();
