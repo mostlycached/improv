@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-// Azure OpenAI configuration for GPT-4o
+// Azure OpenAI configuration for GPT-4o  
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_GPT4O_API_KEY || "default_key",
   baseURL: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai",
@@ -20,8 +20,7 @@ export interface GeneratedContent {
 
 export async function generateAdContent(scrapedContent: string): Promise<GeneratedContent> {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // Azure deployment name
+    const requestBody = {
       messages: [
         {
           role: "system",
@@ -38,15 +37,36 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
           content: `Analyze this website content and create ad copy:\n\n${scrapedContent}`
         }
       ],
-      response_format: { type: "json_object" },
       max_tokens: 500,
+      temperature: 0.7
+    };
+
+    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.OPENAI_GPT4O_API_KEY || "default_key",
+      },
+      body: JSON.stringify(requestBody),
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Azure GPT-4o API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`Azure GPT-4o API Error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || "{}";
+    const result = JSON.parse(content);
     
     return {
       title: result.title || "Transform Your Business",
-      subtitle: result.subtitle || "Discover powerful solutions",
+      subtitle: result.subtitle || "Discover powerful solutions", 
       ctaText: result.ctaText || "Get Started",
       targetAudience: result.targetAudience || "professionals",
       industry: result.industry || "business"
