@@ -29,19 +29,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate ad content from URL
   app.post("/api/generate-content", async (req, res) => {
     try {
+      console.log('Generate content request:', req.body);
       const { url } = generateContentSchema.parse(req.body);
       
       // First scrape the URL
       const scrapedContent = await scrapeUrl(url);
+      console.log('Scraped content length:', scrapedContent.content.length);
       
       // Then generate ad content using AI
       const generatedContent = await generateAdContent(scrapedContent.content);
       
       res.json(generatedContent);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Generate content error:', error);
       res.status(400).json({ 
         message: "Failed to generate ad content", 
-        error: error.message 
+        error: error?.message || "Unknown error"
       });
     }
   });

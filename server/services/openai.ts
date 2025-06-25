@@ -45,8 +45,16 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
     });
 
     console.log('Azure OpenAI response received');
-    const content = response.choices[0].message.content || "{}";
-    const result = JSON.parse(content);
+    let content = response.choices[0].message.content || "{}";
+    
+    // Remove markdown code blocks if present
+    if (content.includes('```json')) {
+      content = content.replace(/```json\s*/, '').replace(/```\s*$/, '');
+    } else if (content.includes('```')) {
+      content = content.replace(/```\s*/, '').replace(/```\s*$/, '');
+    }
+    
+    const result = JSON.parse(content.trim());
     
     return {
       title: result.title || "Transform Your Business",
@@ -84,7 +92,7 @@ export async function generateBackgroundImage(description: string, style: string
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": process.env.OPENAI_IMAGE_API_KEY,
+        "api-key": process.env.OPENAI_IMAGE_API_KEY || "",
       },
       body: JSON.stringify({
         prompt: prompt,

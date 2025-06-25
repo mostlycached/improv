@@ -28,8 +28,13 @@ export default function ControlPanel({
 
   const generateContentMutation = useMutation({
     mutationFn: async (url: string) => {
-      const response = await apiRequest("POST", "/api/generate-content", { url });
-      return response.json();
+      try {
+        const response = await apiRequest("POST", "/api/generate-content", { url });
+        return await response.json();
+      } catch (error) {
+        console.error('Content generation error:', error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       setAdData({
@@ -43,10 +48,11 @@ export default function ControlPanel({
         description: "AI has generated new content for your ad",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Mutation error:', error);
       toast({
         title: "Generation Failed",
-        description: error.message,
+        description: error?.message || "Failed to generate content",
         variant: "destructive",
       });
     },
@@ -54,11 +60,16 @@ export default function ControlPanel({
 
   const generateBackgroundMutation = useMutation({
     mutationFn: async (description: string) => {
-      const response = await apiRequest("POST", "/api/generate-background", { 
-        description,
-        style: "photorealistic"
-      });
-      return response.json();
+      try {
+        const response = await apiRequest("POST", "/api/generate-background", { 
+          description,
+          style: "photorealistic"
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Background generation error:', error);
+        throw error;
+      }
     },
     onSuccess: (data) => {
       setAdData({
@@ -70,10 +81,11 @@ export default function ControlPanel({
         description: "AI has generated a new background image",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Background mutation error:', error);
       toast({
         title: "Generation Failed",
-        description: error.message,
+        description: error?.message || "Failed to generate background",
         variant: "destructive",
       });
     },
