@@ -95,6 +95,10 @@ export async function generateBackgroundImage(description: string, style: string
     
 
 
+    // Create abort controller for 60s timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
       method: "POST",
       headers: {
@@ -102,7 +106,10 @@ export async function generateBackgroundImage(description: string, style: string
         "api-key": process.env.OPENAI_IMAGE_API_KEY || "default_key",
       },
       body: JSON.stringify(requestBody),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -111,7 +118,10 @@ export async function generateBackgroundImage(description: string, style: string
 
     const data = await response.json();
     return data.data?.[0]?.url || "";
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error('Image generation timed out after 60 seconds. Please try again.');
+    }
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to generate background image: ${errorMessage}`);
   }
