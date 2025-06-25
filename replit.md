@@ -100,6 +100,10 @@ Changelog:
   - Implemented 4 layout options (centered, left-aligned, bottom-overlay, split-screen)
   - Added URL scraping and auto-generation features
   - Created single-page ad generator interface
+  - Migrated from HTML rendering to FabricJS interactive canvas
+  - Added floating toolbar for direct preview editing
+  - Implemented two-way data binding between toolbar and left panel
+  - Added 60-second timeout for image generation
 ```
 
 ## User Preferences
