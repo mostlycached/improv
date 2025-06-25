@@ -19,115 +19,346 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
   // Load Fabric.js dynamically
   useEffect(() => {
     const loadFabric = async () => {
-      if (typeof window !== 'undefined' && !(window as any).fabric) {
-        try {
-          const fabricModule = await import('fabric');
-          (window as any).fabric = fabricModule.default;
-        } catch (error) {
-          console.error('Failed to load Fabric.js:', error);
-        }
+      try {
+        // Import fabric and handle different module formats
+        const fabricModule = await import('fabric');
+        console.log('Fabric module loaded:', fabricModule);
+        // The fabric module exports the whole library as default
+        const fabricInstance = fabricModule.default;
+        (window as any).fabric = fabricInstance;
+        console.log('Fabric.js loaded successfully', !!fabricInstance?.Canvas);
+        setFabricLoaded(!!fabricInstance?.Canvas);
+      } catch (error) {
+        console.error('Failed to load Fabric.js:', error);
+        // Fallback to regular canvas if fabric fails
+        setFabricLoaded(false);
       }
-      setFabricLoaded(true);
     };
     loadFabric();
   }, []);
 
+  // Force regular canvas for now to ensure preview works
   useEffect(() => {
-    if (!canvasRef.current || fabricRef.current || !fabricLoaded || !(window as any).fabric) return;
+    setTimeout(() => {
+      if (!fabricRef.current) {
+        console.log('Forcing regular canvas initialization');
+        setFabricLoaded(false);
+      }
+    }, 100);
+  }, []);
 
-    // Initialize Fabric.js canvas
-    const fabric = (window as any).fabric;
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      width: 800,
-      height: 600,
-      backgroundColor: '#ffffff',
-      selection: true,
-    });
+  useEffect(() => {
+    if (!canvasRef.current || fabricRef.current) return;
 
-    fabricRef.current = canvas;
+    console.log('Initializing canvas, fabricLoaded:', fabricLoaded);
+    
+    if (fabricLoaded && (window as any).fabric?.Canvas) {
+      try {
+        // Initialize Fabric.js canvas
+        const fabric = (window as any).fabric;
+        console.log('Creating Fabric canvas');
+        const canvas = new fabric.Canvas(canvasRef.current, {
+          width: 800,
+          height: 600,
+          backgroundColor: '#ffffff',
+          selection: true,
+        });
 
-    // Handle object selection
-    canvas.on('selection:created', (e: any) => {
-      onElementSelect(e.selected?.[0] || e.target || null);
-    });
+        fabricRef.current = canvas;
 
-    canvas.on('selection:updated', (e: any) => {
-      onElementSelect(e.selected?.[0] || e.target || null);
-    });
+        // Handle object selection
+        canvas.on('selection:created', (e: any) => {
+          onElementSelect(e.selected?.[0] || e.target || null);
+        });
 
-    canvas.on('selection:cleared', () => {
-      onElementSelect(null);
-    });
+        canvas.on('selection:updated', (e: any) => {
+          onElementSelect(e.selected?.[0] || e.target || null);
+        });
 
-    setIsReady(true);
+        canvas.on('selection:cleared', () => {
+          onElementSelect(null);
+        });
 
-    return () => {
-      canvas.dispose();
-      fabricRef.current = null;
-    };
+        setIsReady(true);
+        console.log('Fabric canvas ready');
+
+        return () => {
+          canvas.dispose();
+          fabricRef.current = null;
+        };
+      } catch (error) {
+        console.error('Fabric canvas creation failed:', error);
+        initializeRegularCanvas();
+        setIsReady(true);
+      }
+    } else {
+      // Fallback to regular canvas rendering
+      console.log('Using regular canvas');
+      initializeRegularCanvas();
+      setIsReady(true);
+    }
   }, [fabricLoaded, onElementSelect]);
 
-  // Update canvas when adData changes
-  useEffect(() => {
-    if (!fabricRef.current || !isReady || !(window as any).fabric) return;
-
-    const canvas = fabricRef.current;
-    const fabric = (window as any).fabric;
+  const initializeRegularCanvas = () => {
+    if (!canvasRef.current) return;
     
-    // Clear existing objects
-    canvas.clear();
-    canvas.backgroundColor = '#ffffff';
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    canvas.width = 800;
+    canvas.height = 600;
+    
+    // Store canvas context for regular rendering
+    fabricRef.current = { 
+      canvas,
+      ctx,
+      toDataURL: () => canvas.toDataURL(),
+      renderAll: () => renderRegularCanvas()
+    };
+  };
+
+  const renderRegularCanvas = () => {
+    if (!fabricRef.current?.ctx) return;
+    
+    const { ctx, canvas } = fabricRef.current;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Apply background image if exists
     if (adData.backgroundImageUrl) {
-      fabric.Image.fromURL(adData.backgroundImageUrl, (img: any) => {
-        const scaleX = canvas.width / img.width;
-        const scaleY = canvas.height / img.height;
-        const scale = Math.max(scaleX, scaleY);
-        
-        img.set({
-          scaleX: scale,
-          scaleY: scale,
-          left: canvas.width / 2,
-          top: canvas.height / 2,
-          originX: 'center',
-          originY: 'center',
-          selectable: false,
-          evented: false,
-        });
-        canvas.backgroundImage = img;
-        canvas.renderAll();
-      });
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        renderLayoutElements();
+      };
+      img.src = adData.backgroundImageUrl;
+    } else {
+      renderLayoutElements();
     }
+  };
 
-    // Add elements based on layout
-    renderLayout(canvas, adData, fabric);
+  const renderLayoutElements = () => {
+    if (!fabricRef.current?.ctx) return;
+    
+    const { ctx, canvas } = fabricRef.current;
+    const width = canvas.width;
+    const height = canvas.height;
+
+    switch (adData.layout) {
+      case 'centered':
+        renderCenteredLayout(ctx, width, height);
+        break;
+      case 'left-aligned':
+        renderLeftAlignedLayout(ctx, width, height);
+        break;
+      case 'bottom-overlay':
+        renderBottomOverlayLayout(ctx, width, height);
+        break;
+      case 'split-screen':
+        renderSplitScreenLayout(ctx, width, height);
+        break;
+      default:
+        renderCenteredLayout(ctx, width, height);
+    }
+  };
+
+  const renderCenteredLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    // Title
+    ctx.font = 'bold 48px Arial';
+    ctx.fillStyle = adData.primaryColor;
+    ctx.textAlign = 'center';
+    ctx.fillText(adData.title, width / 2, height / 3);
+
+    // Subtitle
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(adData.subtitle, width / 2, height / 2);
+
+    // CTA Button
+    ctx.fillStyle = adData.accentColor;
+    const buttonX = width / 2 - 100;
+    const buttonY = height * 2 / 3 - 25;
+    roundRect(ctx, buttonX, buttonY, 200, 50, 8);
+    ctx.fill();
+
+    // Button text
+    ctx.font = 'bold 18px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(adData.ctaText, width / 2, height * 2 / 3 + 5);
+  };
+
+  const renderLeftAlignedLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const leftPadding = 60;
+
+    // Title
+    ctx.font = 'bold 42px Arial';
+    ctx.fillStyle = adData.primaryColor;
+    ctx.textAlign = 'left';
+    ctx.fillText(adData.title, leftPadding, height / 4);
+
+    // Subtitle
+    ctx.font = '20px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(adData.subtitle, leftPadding, height / 2);
+
+    // CTA Button
+    ctx.fillStyle = adData.accentColor;
+    const buttonX = leftPadding;
+    const buttonY = height * 3 / 4 - 22;
+    roundRect(ctx, buttonX, buttonY, 180, 45, 6);
+    ctx.fill();
+
+    // Button text
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText(adData.ctaText, leftPadding + 90, height * 3 / 4 + 5);
+  };
+
+  const renderBottomOverlayLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    // Overlay background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, height * 2 / 3, width, height / 3);
+
+    // Title
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText(adData.title, width / 2, height * 3 / 4);
+
+    // Subtitle
+    ctx.font = '18px Arial';
+    ctx.fillText(adData.subtitle, width / 2, height * 5 / 6);
+
+    // CTA Button
+    ctx.fillStyle = adData.accentColor;
+    const buttonX = width - 180;
+    const buttonY = height - 60;
+    roundRect(ctx, buttonX, buttonY, 150, 40, 5);
+    ctx.fill();
+
+    // Button text
+    ctx.font = 'bold 14px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(adData.ctaText, width - 105, height - 35);
+  };
+
+  const renderSplitScreenLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const splitX = width / 2;
+
+    // Left section background
+    ctx.fillStyle = adData.primaryColor;
+    ctx.fillRect(0, 0, splitX, height);
+
+    // Title on left
+    ctx.font = 'bold 38px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText(adData.title, splitX / 2, height / 3);
+
+    // Subtitle on right
+    ctx.font = '22px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height / 2);
+
+    // CTA Button on right
+    ctx.fillStyle = adData.accentColor;
+    const buttonX = splitX + (splitX / 2) - 80;
+    const buttonY = height * 2 / 3 - 22;
+    roundRect(ctx, buttonX, buttonY, 160, 45, 6);
+    ctx.fill();
+
+    // Button text
+    ctx.font = 'bold 16px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 2 / 3 + 5);
+  };
+
+  const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  };
+
+  // Update canvas when adData changes
+  useEffect(() => {
+    if (!isReady) return;
+
+    if (fabricLoaded && (window as any).fabric && fabricRef.current?.clear) {
+      // Fabric.js rendering
+      const canvas = fabricRef.current;
+      const fabric = (window as any).fabric;
+      
+      canvas.clear();
+      canvas.backgroundColor = '#ffffff';
+
+      if (adData.backgroundImageUrl) {
+        fabric.Image.fromURL(adData.backgroundImageUrl, (img: any) => {
+          const scaleX = canvas.width / img.width;
+          const scaleY = canvas.height / img.height;
+          const scale = Math.max(scaleX, scaleY);
+          
+          img.set({
+            scaleX: scale,
+            scaleY: scale,
+            left: canvas.width / 2,
+            top: canvas.height / 2,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            evented: false,
+          });
+          canvas.backgroundImage = img;
+          canvas.renderAll();
+        });
+      }
+
+      renderFabricLayout(canvas, adData, fabric);
+    } else {
+      // Regular canvas rendering
+      renderRegularCanvas();
+    }
   }, [adData, isReady, fabricLoaded]);
 
-  const renderLayout = (canvas: any, data: AdData, fabric: any) => {
+  const renderFabricLayout = (canvas: any, data: AdData, fabric: any) => {
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
     switch (data.layout) {
       case 'centered':
-        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
+        renderFabricCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'left-aligned':
-        renderLeftAlignedLayout(canvas, data, canvasWidth, canvasHeight, fabric);
+        renderFabricLeftAlignedLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'bottom-overlay':
-        renderBottomOverlayLayout(canvas, data, canvasWidth, canvasHeight, fabric);
+        renderFabricBottomOverlayLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       case 'split-screen':
-        renderSplitScreenLayout(canvas, data, canvasWidth, canvasHeight, fabric);
+        renderFabricSplitScreenLayout(canvas, data, canvasWidth, canvasHeight, fabric);
         break;
       default:
-        renderCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
+        renderFabricCenteredLayout(canvas, data, canvasWidth, canvasHeight, fabric);
     }
   };
 
-  const renderCenteredLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
-    // Title
+  const renderFabricCenteredLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const title = new fabric.Text(data.title, {
       left: width / 2,
       top: height / 3,
@@ -139,7 +370,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // Subtitle
     const subtitle = new fabric.Text(data.subtitle, {
       left: width / 2,
       top: height / 2,
@@ -150,7 +380,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // CTA Button
     const buttonRect = new fabric.Rect({
       left: width / 2 - 100,
       top: height * 2 / 3 - 25,
@@ -172,7 +401,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontWeight: 'bold',
     });
 
-    // Group button elements
     const buttonGroup = new fabric.Group([buttonRect, buttonText], {
       left: width / 2,
       top: height * 2 / 3,
@@ -183,10 +411,9 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     canvas.add(title, subtitle, buttonGroup);
   };
 
-  const renderLeftAlignedLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
+  const renderFabricLeftAlignedLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const leftPadding = 60;
 
-    // Title
     const title = new fabric.Text(data.title, {
       left: leftPadding,
       top: height / 4,
@@ -196,7 +423,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // Subtitle
     const subtitle = new fabric.Text(data.subtitle, {
       left: leftPadding,
       top: height / 2,
@@ -205,7 +431,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // CTA Button
     const buttonRect = new fabric.Rect({
       left: leftPadding,
       top: height * 3 / 4,
@@ -235,8 +460,7 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     canvas.add(title, subtitle, buttonGroup);
   };
 
-  const renderBottomOverlayLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
-    // Create overlay background
+  const renderFabricBottomOverlayLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const overlay = new fabric.Rect({
       left: 0,
       top: height * 2 / 3,
@@ -246,7 +470,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       selectable: false,
     });
 
-    // Title
     const title = new fabric.Text(data.title, {
       left: width / 2,
       top: height * 3 / 4,
@@ -258,7 +481,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // Subtitle
     const subtitle = new fabric.Text(data.subtitle, {
       left: width / 2,
       top: height * 5 / 6,
@@ -269,7 +491,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // CTA Button
     const buttonRect = new fabric.Rect({
       left: width - 180,
       top: height - 60,
@@ -299,10 +520,9 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     canvas.add(overlay, title, subtitle, buttonGroup);
   };
 
-  const renderSplitScreenLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
+  const renderFabricSplitScreenLayout = (canvas: any, data: AdData, width: number, height: number, fabric: any) => {
     const splitX = width / 2;
 
-    // Left section background
     const leftBg = new fabric.Rect({
       left: 0,
       top: 0,
@@ -312,7 +532,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       selectable: false,
     });
 
-    // Title on left
     const title = new fabric.Text(data.title, {
       left: splitX / 2,
       top: height / 3,
@@ -324,7 +543,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // Subtitle on right
     const subtitle = new fabric.Text(data.subtitle, {
       left: splitX + (splitX / 2),
       top: height / 2,
@@ -335,7 +553,6 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       fontFamily: 'Arial',
     });
 
-    // CTA Button on right
     const buttonRect = new fabric.Rect({
       left: splitX + (splitX / 2) - 80,
       top: height * 2 / 3 - 22,
@@ -374,16 +591,15 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       format: 'png',
       quality: 1,
       multiplier: 2,
-    });
+    }) || fabricRef.current.toDataURL();
 
-    // Create download link
     const link = document.createElement('a');
     link.download = 'ad-design.png';
     link.href = dataURL;
     link.click();
   };
 
-  if (!fabricLoaded) {
+  if (!isReady) {
     return (
       <div className="flex items-center justify-center w-[800px] h-[600px] border border-gray-200 rounded-lg">
         <div className="text-gray-500">Loading canvas...</div>
@@ -396,6 +612,8 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       <canvas
         ref={canvasRef}
         className="border border-gray-200 rounded-lg shadow-sm"
+        width={800}
+        height={600}
       />
       <button
         onClick={exportCanvas}
