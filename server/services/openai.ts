@@ -1,0 +1,78 @@
+import OpenAI from "openai";
+
+// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key" 
+});
+
+export interface GeneratedContent {
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  targetAudience: string;
+  industry: string;
+}
+
+export async function generateAdContent(scrapedContent: string): Promise<GeneratedContent> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert marketing copywriter. Analyze the provided website content and generate compelling ad copy. Respond with JSON in this exact format: {
+            "title": "compelling headline (max 60 chars)",
+            "subtitle": "supporting description (max 120 chars)",
+            "ctaText": "action button text (max 20 chars)",
+            "targetAudience": "describe target audience",
+            "industry": "industry category"
+          }`
+        },
+        {
+          role: "user",
+          content: `Analyze this website content and create ad copy:\n\n${scrapedContent}`
+        }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 500,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    
+    return {
+      title: result.title || "Transform Your Business",
+      subtitle: result.subtitle || "Discover powerful solutions",
+      ctaText: result.ctaText || "Get Started",
+      targetAudience: result.targetAudience || "professionals",
+      industry: result.industry || "business"
+    };
+  } catch (error) {
+    throw new Error(`Failed to generate ad content: ${error.message}`);
+  }
+}
+
+export async function generateBackgroundImage(description: string, style: string = "photorealistic"): Promise<string> {
+  try {
+    let prompt = "";
+    
+    if (style === "photorealistic") {
+      prompt = `Professional, high-quality photograph of ${description} in a modern workplace setting. Clean, well-lit environment with soft natural lighting. Corporate, business-focused atmosphere. Professional attire. High resolution, crisp details, photorealistic style.`;
+    } else if (style === "vector") {
+      prompt = `Clean, modern vector illustration of ${description}. Minimalist design with flat colors and geometric shapes. Professional business theme. Simple, elegant composition suitable for marketing materials.`;
+    } else {
+      prompt = `Professional business setting with ${description}. Modern office environment, clean aesthetic, corporate atmosphere. Suitable for business advertising and marketing materials.`;
+    }
+
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+    });
+
+    return response.data[0].url || "";
+  } catch (error) {
+    throw new Error(`Failed to generate background image: ${error.message}`);
+  }
+}
