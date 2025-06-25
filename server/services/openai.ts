@@ -2,11 +2,11 @@ import OpenAI from "openai";
 
 // Azure OpenAI configuration for GPT-4o  
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_GPT4O_API_KEY || "default_key",
-  baseURL: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai",
-  defaultQuery: { "api-version": "2025-01-01-preview" },
+  apiKey: process.env.OPENAI_GPT4O_API_KEY,
+  baseURL: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-4o",
+  defaultQuery: { "api-version": "2024-02-15-preview" },
   defaultHeaders: {
-    "api-key": process.env.OPENAI_GPT4O_API_KEY || "default_key",
+    "api-key": process.env.OPENAI_GPT4O_API_KEY,
   },
 });
 
@@ -20,7 +20,10 @@ export interface GeneratedContent {
 
 export async function generateAdContent(scrapedContent: string): Promise<GeneratedContent> {
   try {
-    const requestBody = {
+    console.log('Calling Azure OpenAI with content length:', scrapedContent.length);
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // Azure deployment name
       messages: [
         {
           role: "system",
@@ -39,25 +42,10 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
       ],
       max_tokens: 500,
       temperature: 0.7
-    };
-
-    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": process.env.OPENAI_GPT4O_API_KEY || "default_key",
-      },
-      body: JSON.stringify(requestBody),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-
-      throw new Error(`Azure GPT-4o API Error: ${response.status} - ${errorText}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "{}";
+    console.log('Azure OpenAI response received');
+    const content = response.choices[0].message.content || "{}";
     const result = JSON.parse(content);
     
     return {
@@ -69,6 +57,7 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('Azure OpenAI API Error:', errorMessage);
     throw new Error(`Failed to generate ad content: ${errorMessage}`);
   }
 }
@@ -85,27 +74,23 @@ export async function generateBackgroundImage(description: string, style: string
       prompt = `Professional business setting with ${description}. Modern office environment, clean aesthetic, corporate atmosphere. Suitable for business advertising and marketing materials.`;
     }
 
-    // Use direct fetch for Azure OpenAI image generation endpoint
-    const requestBody = {
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "high",
-    };
-    
-
+    console.log('Generating background image with Azure OpenAI');
 
     // Create abort controller for 60s timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
+    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2024-02-15-preview", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "api-key": process.env.OPENAI_IMAGE_API_KEY || "default_key",
+        "api-key": process.env.OPENAI_IMAGE_API_KEY,
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify({
+        prompt: prompt,
+        n: 1,
+        size: "1024x1024"
+      }),
       signal: controller.signal,
     });
 
@@ -113,16 +98,23 @@ export async function generateBackgroundImage(description: string, style: string
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Azure Image API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
       throw new Error(`Azure Image API Error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Background image generated successfully');
     return data.data?.[0]?.url || "";
   } catch (error: any) {
     if (error.name === 'AbortError') {
       throw new Error('Image generation timed out after 60 seconds. Please try again.');
     }
     const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('Background image generation failed:', errorMessage);
     throw new Error(`Failed to generate background image: ${errorMessage}`);
   }
 }
