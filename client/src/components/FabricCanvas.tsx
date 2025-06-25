@@ -40,17 +40,20 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
   // Force regular canvas for now to ensure preview works
   useEffect(() => {
     setTimeout(() => {
-      if (!fabricRef.current) {
+      console.log('Checking canvas initialization');
+      if (!fabricRef.current && canvasRef.current) {
         console.log('Forcing regular canvas initialization');
         setFabricLoaded(false);
+        initializeRegularCanvas();
+        setIsReady(true);
       }
-    }, 100);
+    }, 200);
   }, []);
 
   useEffect(() => {
     if (!canvasRef.current || fabricRef.current) return;
 
-    console.log('Initializing canvas, fabricLoaded:', fabricLoaded);
+    console.log('Initializing canvas, fabricLoaded:', fabricLoaded, 'fabric available:', !!(window as any).fabric?.Canvas);
     
     if (fabricLoaded && (window as any).fabric?.Canvas) {
       try {
@@ -109,6 +112,8 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     canvas.width = 800;
     canvas.height = 600;
     
+    console.log('Regular canvas initialized');
+    
     // Store canvas context for regular rendering
     fabricRef.current = { 
       canvas,
@@ -116,6 +121,9 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
       toDataURL: () => canvas.toDataURL(),
       renderAll: () => renderRegularCanvas()
     };
+    
+    // Immediately render content
+    renderRegularCanvas();
   };
 
   const renderRegularCanvas = () => {

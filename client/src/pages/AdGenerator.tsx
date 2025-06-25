@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Wand2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ControlPanel from "@/components/ControlPanel";
-import FabricCanvas from "@/components/FabricCanvas";
+import SimpleCanvas from "@/components/SimpleCanvas";
 import FloatingToolbar from "@/components/FloatingToolbar";
 
 export interface AdData {
@@ -31,13 +31,9 @@ export default function AdGenerator() {
   const canvasRef = useRef<any>(null);
 
   const handleExport = () => {
-    // Export will be handled by the FabricCanvas component
-    if (canvasRef.current) {
-      const dataURL = canvasRef.current.toDataURL({
-        format: 'png',
-        quality: 1,
-        multiplier: 2,
-      });
+    // Export will be handled by the SimpleCanvas component
+    if (canvasRef.current?.toDataURL) {
+      const dataURL = canvasRef.current.toDataURL();
       const link = document.createElement('a');
       link.download = 'ad-design.png';
       link.href = dataURL;
@@ -96,7 +92,7 @@ export default function AdGenerator() {
           </div>
 
           <div className="flex-1 flex items-center justify-center p-8">
-            <FabricCanvas 
+            <SimpleCanvas 
               ref={canvasRef}
               adData={adData} 
               onElementSelect={setSelectedElement}
