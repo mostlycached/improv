@@ -70,25 +70,40 @@ export async function generateBackgroundImage(description: string, style: string
     }
 
     // Use direct fetch for Azure OpenAI image generation endpoint
+    const requestBody = {
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+    };
+    
+    console.log('Sending image generation request:', {
+      url: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview",
+      body: requestBody
+    });
+
     const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "api-key": process.env.OPENAI_IMAGE_API_KEY || "default_key",
       },
-      body: JSON.stringify({
-        prompt: prompt,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`Image generation failed:`, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: errorText
+      });
+      throw new Error(`Azure Image API Error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('Image generation success:', data);
     return data.data?.[0]?.url || "";
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
