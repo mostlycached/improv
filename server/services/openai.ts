@@ -1,12 +1,12 @@
 import OpenAI from "openai";
 
-// Azure OpenAI configuration
+// Azure OpenAI configuration for GPT-4o
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "default_key",
+  apiKey: process.env.OPENAI_GPT4O_API_KEY || "default_key",
   baseURL: "https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai",
   defaultQuery: { "api-version": "2025-01-01-preview" },
   defaultHeaders: {
-    "api-key": process.env.OPENAI_API_KEY || "default_key",
+    "api-key": process.env.OPENAI_GPT4O_API_KEY || "default_key",
   },
 });
 
@@ -52,7 +52,8 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
       industry: result.industry || "business"
     };
   } catch (error) {
-    throw new Error(`Failed to generate ad content: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to generate ad content: ${errorMessage}`);
   }
 }
 
@@ -68,16 +69,29 @@ export async function generateBackgroundImage(description: string, style: string
       prompt = `Professional business setting with ${description}. Modern office environment, clean aesthetic, corporate atmosphere. Suitable for business advertising and marketing materials.`;
     }
 
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
+    // Use direct fetch for Azure OpenAI image generation endpoint
+    const response = await fetch("https://harip-mbtw0h35-westus3.cognitiveservices.azure.com/openai/deployments/gpt-image-1/images/generations?api-version=2025-04-01-preview", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.OPENAI_IMAGE_API_KEY || "default_key",
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+      }),
     });
 
-    return response.data[0].url || "";
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data?.[0]?.url || "";
   } catch (error) {
-    throw new Error(`Failed to generate background image: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to generate background image: ${errorMessage}`);
   }
 }
