@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a full-stack web application that generates AI-powered advertising content using OpenAI's GPT models. The application allows users to scrape website content, generate compelling ad copy, create background images, and export professional advertisements.
+This is a full-stack web application that generates AI-powered advertising content using OpenAI's GPT models. The application allows users to scrape website content, generate compelling ad copy, create background images, and export professional advertisements. It now includes a Chrome extension for one-click ad generation from any webpage.
 
 ## System Architecture
 
@@ -39,6 +39,7 @@ The application uses a simple schema with an `ads` table containing:
 - Canvas export data
 
 ### API Endpoints
+- `GET /api/health`: Health check for Chrome extension connectivity
 - `POST /api/scrape`: Extract content from URLs
 - `POST /api/generate-content`: Generate ad copy from scraped content
 - `POST /api/generate-background`: Create AI-generated background images
@@ -124,6 +125,10 @@ Changelog:
   - Implemented comprehensive AI strategy analysis that automatically generates background images
   - Fixed text selection system with proper element bounds tracking and floating toolbar positioning
   - Moved color controls to advanced section for better UI organization
+  - Created Chrome extension for one-click ad generation from any webpage
+  - Added CORS support to backend for Chrome extension connectivity
+  - Implemented health check endpoint for extension connection testing
+  - Added comprehensive extension with settings, download, edit, and share features
 ```
 
 ## User Preferences

@@ -30,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ 
         message: "Failed to scrape URL", 
-        error: (error as Error).message 
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ 
         message: "Failed to get ad", 
-        error: error.message 
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
