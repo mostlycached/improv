@@ -3,35 +3,35 @@
 @tailwind utilities;
 
 :root {
-  /* Fresh Peach Color Scheme - #FFD3AC, #FFB5AB, #E39A7B, #DBB06B */
-  --background: hsl(32, 100%, 84%); /* #FFD3AC - lightest peach */
+  /* Quite Clear Color Scheme - #CBCBCB, #F2F2F2, #174D38, #4D1717 */
+  --background: hsl(0, 0%, 95%); /* #F2F2F2 - light gray */
   --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(8, 100%, 84%); /* #FFB5AB - soft peach */
+  --muted: hsl(0, 0%, 80%); /* #CBCBCB - medium gray */
   --muted-foreground: hsl(25, 5.3%, 44.7%);
-  --popover: hsl(32, 100%, 84%);
+  --popover: hsl(0, 0%, 95%);
   --popover-foreground: hsl(20, 14.3%, 4.1%);
-  --card: hsl(8, 100%, 84%); /* #FFB5AB */
+  --card: hsl(0, 0%, 100%); /* White for cards */
   --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(19, 58%, 69%); /* #E39A7B - medium peach */
-  --input: hsl(8, 100%, 84%);
-  --primary: hsl(19, 58%, 69%); /* #E39A7B */
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(32, 100%, 84%); /* #FFD3AC */
+  --border: hsl(0, 0%, 80%); /* #CBCBCB */
+  --input: hsl(0, 0%, 100%);
+  --primary: hsl(157, 48%, 19%); /* #174D38 - forest green */
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(0, 0%, 95%); /* #F2F2F2 */
   --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(38, 58%, 64%); /* #DBB06B - golden peach */
-  --accent-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(0, 48%, 19%); /* #4D1717 - burgundy */
+  --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(19, 58%, 69%);
+  --ring: hsl(157, 48%, 19%);
   --radius: 0.5rem;
   
-  /* Fresh Peach theme custom colors */
-  --peach-light: hsl(32, 100%, 84%); /* #FFD3AC */
-  --peach-soft: hsl(8, 100%, 84%); /* #FFB5AB */
-  --peach-medium: hsl(19, 58%, 69%); /* #E39A7B */
-  --peach-golden: hsl(38, 58%, 64%); /* #DBB06B */
+  /* Quite Clear theme custom colors */
+  --clear-light: hsl(0, 0%, 95%); /* #F2F2F2 */
+  --clear-medium: hsl(0, 0%, 80%); /* #CBCBCB */
+  --clear-green: hsl(157, 48%, 19%); /* #174D38 */
+  --clear-burgundy: hsl(0, 48%, 19%); /* #4D1717 */
   --google-gray: hsl(220, 9%, 46%);
-  --google-border: hsl(19, 58%, 69%);
+  --google-border: hsl(0, 0%, 80%);
 }
 
 .dark {
