@@ -88,7 +88,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
 
     // Title
     ctx.font = 'bold 48px Arial';
-    ctx.fillStyle = adData.primaryColor;
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const titleMetrics = ctx.measureText(adData.title);
@@ -107,7 +107,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
 
     // Subtitle
     ctx.font = '24px Arial';
-    ctx.fillStyle = '#333333';
+    ctx.fillStyle = '#ffffff';
     const subtitleMetrics = ctx.measureText(adData.subtitle);
     const subtitleY = height / 2;
     ctx.fillText(adData.subtitle, width / 2, subtitleY);
@@ -151,7 +151,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
 
     // Title
     ctx.font = 'bold 42px Arial';
-    ctx.fillStyle = adData.primaryColor;
+    ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     const titleMetrics = ctx.measureText(adData.title);
@@ -169,7 +169,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
 
     // Subtitle
     ctx.font = '20px Arial';
-    ctx.fillStyle = '#333333';
+    ctx.fillStyle = '#ffffff';
     const subtitleMetrics = ctx.measureText(adData.subtitle);
     const subtitleY = height / 2;
     ctx.fillText(adData.subtitle, leftPadding, subtitleY);
