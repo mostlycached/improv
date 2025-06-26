@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Get backend URL from settings
       const settings = await chrome.storage.sync.get(['backendUrl']);
-      const backendUrl = settings.backendUrl || 'http://localhost:5000';
+      const backendUrl = settings.backendUrl || 'https://improvads.replit.app';
 
       // Generate ad content
       const response = await fetch(`${backendUrl}/api/generate-content`, {
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     try {
       const settings = await chrome.storage.sync.get(['backendUrl']);
-      const backendUrl = settings.backendUrl || 'http://localhost:5000';
+      const backendUrl = settings.backendUrl || 'https://improvads.replit.app';
       
       // Open the main app with the ad data
       const editUrl = `${backendUrl}/?edit=true&data=${encodeURIComponent(JSON.stringify(currentAdData))}`;
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     try {
       const settings = await chrome.storage.sync.get(['backendUrl']);
-      const backendUrl = settings.backendUrl || 'http://localhost:5000';
+      const backendUrl = settings.backendUrl || 'https://improvads.replit.app';
 
       // Save the ad to get a shareable ID
       const response = await fetch(`${backendUrl}/api/ads`, {

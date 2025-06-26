@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'defaultLayout',
       'defaultStyle'
     ], function(result) {
-      backendUrlInput.value = result.backendUrl || 'http://localhost:5000';
+      backendUrlInput.value = result.backendUrl || 'https://improvads.replit.app';
       defaultLayoutSelect.value = result.defaultLayout || 'centered';
       defaultStyleSelect.value = result.defaultStyle || 'Photorealistic';
     });

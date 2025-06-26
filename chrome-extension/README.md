@@ -25,7 +25,9 @@ This Chrome extension allows you to generate AI-powered advertisements from any 
 
 1. Click the extension icon in your Chrome toolbar
 2. Click "⚙️ Settings" at the bottom of the popup
-3. Enter your backend service URL (default: `http://localhost:5000`)
+3. Enter your backend service URL:
+   - For production: `https://improvads.replit.app`
+   - For local development: `http://localhost:5000`
 4. Click "Test Connection" to verify connectivity
 5. Configure your default preferences:
    - Default Layout (Centered, Left Aligned, etc.)
