@@ -25,8 +25,8 @@ export default function ControlPanel({
   setIsGenerating 
 }: ControlPanelProps) {
   const [productUrl, setProductUrl] = useState("");
-  const [personArchetype, setPersonArchetype] = useState("");
-  const [environment, setEnvironment] = useState("");
+  const [personArchetype, setPersonArchetype] = useState("none");
+  const [environment, setEnvironment] = useState("none");
   const [artisticStyle, setArtisticStyle] = useState("Photorealistic");
   const { toast } = useToast();
 
@@ -68,8 +68,8 @@ export default function ControlPanel({
         const response = await apiRequest("POST", "/api/generate-background", { 
           description,
           style: artisticStyle,
-          personArchetype: personArchetype || undefined,
-          environment: environment || undefined
+          personArchetype: personArchetype === "none" ? undefined : personArchetype,
+          environment: environment === "none" ? undefined : environment
         });
         return await response.json();
       } catch (error) {
@@ -248,6 +248,69 @@ export default function ControlPanel({
         <section>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Background</h2>
           <div className="space-y-3">
+            {/* Artistic Style Dropdown */}
+            <div>
+              <Label className="text-google-gray mb-2 block">Artistic Style</Label>
+              <Select value={artisticStyle} onValueChange={setArtisticStyle}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select artistic style" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Photorealistic">Photorealistic</SelectItem>
+                  <SelectItem value="Geometric Abstraction">Geometric Abstraction</SelectItem>
+                  <SelectItem value="Neo-Memphis">Neo-Memphis</SelectItem>
+                  <SelectItem value="Gradient Silhouette">Gradient Silhouette</SelectItem>
+                  <SelectItem value="Brutalist Gradient">Brutalist Gradient</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Person Archetype Dropdown */}
+            <div>
+              <Label className="text-google-gray mb-2 block">Person Archetype</Label>
+              <Select value={personArchetype} onValueChange={setPersonArchetype}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select person type (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="Healthcare Professional">Healthcare Professional</SelectItem>
+                  <SelectItem value="Construction Worker">Construction Worker</SelectItem>
+                  <SelectItem value="Business Executive">Business Executive</SelectItem>
+                  <SelectItem value="Tech Developer">Tech Developer</SelectItem>
+                  <SelectItem value="Teacher/Educator">Teacher/Educator</SelectItem>
+                  <SelectItem value="Chef/Restaurant Worker">Chef/Restaurant Worker</SelectItem>
+                  <SelectItem value="Retail Associate">Retail Associate</SelectItem>
+                  <SelectItem value="Creative Professional">Creative Professional</SelectItem>
+                  <SelectItem value="Fitness Trainer">Fitness Trainer</SelectItem>
+                  <SelectItem value="Customer Service Rep">Customer Service Rep</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Environment Dropdown */}
+            <div>
+              <Label className="text-google-gray mb-2 block">Environment</Label>
+              <Select value={environment} onValueChange={setEnvironment}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select environment (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="Modern Office">Modern Office</SelectItem>
+                  <SelectItem value="Hospital/Medical Facility">Hospital/Medical Facility</SelectItem>
+                  <SelectItem value="Construction Site">Construction Site</SelectItem>
+                  <SelectItem value="Tech Workspace">Tech Workspace</SelectItem>
+                  <SelectItem value="Classroom">Classroom</SelectItem>
+                  <SelectItem value="Restaurant Kitchen">Restaurant Kitchen</SelectItem>
+                  <SelectItem value="Retail Store">Retail Store</SelectItem>
+                  <SelectItem value="Creative Studio">Creative Studio</SelectItem>
+                  <SelectItem value="Gym/Fitness Center">Gym/Fitness Center</SelectItem>
+                  <SelectItem value="Call Center">Call Center</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <Button
               onClick={handleGenerateBackground}
               disabled={generateBackgroundMutation.isPending}

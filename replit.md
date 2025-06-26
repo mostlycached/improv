@@ -107,6 +107,12 @@ Changelog:
   - Fixed web scraper with proper gzip/deflate decompression for authentic content extraction
   - Resolved Azure OpenAI JSON parsing issues with markdown code block handling
   - Canvas now displays ad previews with SimpleCanvas fallback implementation
+- June 26, 2025. Enhanced background image generation system
+  - Added person archetype dropdown with 10 occupation-based options
+  - Added environment dropdown with 10 workplace setting options
+  - Implemented 5 artistic styles: Photorealistic, Geometric Abstraction, Neo-Memphis, Gradient Silhouette, Brutalist Gradient
+  - Updated Azure OpenAI prompts to use rule of thirds composition with face positioning in top right hotspot
+  - Enhanced API to handle separate archetype and environment parameters
 ```
 
 ## User Preferences
