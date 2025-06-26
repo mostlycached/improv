@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 350px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #1e293b;
+      font-weight: 600;
+    }
+    
+    .header p {
+      margin: 5px 0 0 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    
+    .generate-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 15px;
+    }
+    
+    .generate-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .generate-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .status.loading {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+    
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+    
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #f87171;
+    }
+    
+    .ad-preview {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin-bottom: 15px;
+    }
+    
+    .ad-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .ad-info {
+      padding: 12px;
+    }
+    
+    .ad-info h3 {
+      margin: 0 0 5px 0;
+      font-size: 14px;
+      color: #1e293b;
+      font-weight: 600;
+    }
+    
+    .ad-info p {
+      margin: 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .action-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #475569;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    
+    .settings-link {
+      display: block;
+      text-align: center;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 11px;
+      margin-top: 15px;
+      padding: 8px;
+    }
+    
+    .settings-link:hover {
+      color: #475569;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AI Ad Generator</h1>
+    <p>Generate ads from this webpage</p>
+  </div>
+  
+  <button id="generateBtn" class="generate-btn">
+    🎨 Generate Ad
+  </button>
+  
+  <div id="status" class="status hidden"></div>
+  
+  <div id="adPreview" class="ad-preview hidden">
+    <img id="adImage" src="" alt="Generated Ad">
+    <div class="ad-info">
+      <h3 id="adTitle"></h3>
+      <p id="adDescription"></p>
+    </div>
+  </div>
+  
+  <div id="actions" class="actions hidden">
+    <button id="downloadBtn" class="action-btn">💾 Download</button>
+    <button id="editBtn" class="action-btn">✏️ Edit</button>
+    <button id="shareBtn" class="action-btn">🔗 Share</button>
+  </div>
+  
+  <a href="options.html" class="settings-link" target="_blank">⚙️ Settings</a>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

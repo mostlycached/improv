@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI Ad Generator - Settings</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f8fafc;
+      line-height: 1.6;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      color: #1e293b;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+    }
+    
+    .header p {
+      color: #64748b;
+      font-size: 16px;
+      margin: 0;
+    }
+    
+    .section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+    
+    .section h2 {
+      color: #1e293b;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    label {
+      display: block;
+      color: #374151;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+    
+    input[type="url"], input[type="text"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    
+    input[type="url"]:focus, input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
+    .save-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .save-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .save-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .status {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 16px;
+      text-align: center;
+    }
+    
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #34d399;
+    }
+    
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #f87171;
+    }
+    
+    .test-btn {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 12px;
+      transition: all 0.2s;
+    }
+    
+    .test-btn:hover {
+      background: #e2e8f0;
+    }
+    
+    .connection-status {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    
+    .status-dot.connected {
+      background: #22c55e;
+    }
+    
+    .status-dot.disconnected {
+      background: #ef4444;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AI Ad Generator Settings</h1>
+    <p>Configure your extension preferences</p>
+  </div>
+  
+  <div class="section">
+    <h2>Backend Configuration</h2>
+    <form id="settingsForm">
+      <div class="form-group">
+        <label for="backendUrl">Backend Service URL</label>
+        <div style="display: flex; align-items: center;">
+          <input type="url" id="backendUrl" placeholder="http://localhost:5000" required>
+          <button type="button" id="testBtn" class="test-btn">Test Connection</button>
+        </div>
+        <div class="help-text">
+          Enter the URL where your AI Ad Generator backend is running. Default is http://localhost:5000 for local development.
+        </div>
+        <div id="connectionStatus" class="connection-status hidden">
+          <div class="status-dot"></div>
+          <span></span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="defaultLayout">Default Layout</label>
+        <select id="defaultLayout">
+          <option value="centered">Centered</option>
+          <option value="left-aligned">Left Aligned</option>
+          <option value="bottom-overlay">Bottom Overlay</option>
+          <option value="split-screen">Split Screen</option>
+        </select>
+        <div class="help-text">
+          Choose the default layout style for generated ads.
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="defaultStyle">Default Artistic Style</label>
+        <select id="defaultStyle">
+          <option value="Photorealistic">Photorealistic</option>
+          <option value="Geometric Abstraction">Geometric Abstraction</option>
+          <option value="Neo-Memphis">Neo-Memphis</option>
+          <option value="Gradient Silhouette">Gradient Silhouette</option>
+          <option value="Brutalist Gradient">Brutalist Gradient</option>
+        </select>
+        <div class="help-text">
+          Set the default artistic style for background image generation.
+        </div>
+      </div>
+      
+      <button type="submit" id="saveBtn" class="save-btn">Save Settings</button>
+      <div id="saveStatus" class="status hidden"></div>
+    </form>
+  </div>
+  
+  <div class="section">
+    <h2>Usage Instructions</h2>
+    <ol style="color: #374151; padding-left: 20px;">
+      <li>Navigate to any webpage you want to create an ad for</li>
+      <li>Click the extension icon in your browser toolbar</li>
+      <li>Click "Generate Ad" to create an AI-powered advertisement</li>
+      <li>Download, edit, or share your generated ad</li>
+    </ol>
+    <p style="color: #6b7280; font-size: 14px; margin-top: 16px;">
+      The extension will automatically extract content from the current webpage and generate relevant ad copy and visuals using your configured backend service.
+    </p>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>
