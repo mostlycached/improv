@@ -12,6 +12,15 @@ import { generateAdContent, generateBackgroundImage } from "./services/openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Health check endpoint for Chrome extension
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      service: "AI Ad Generator API",
+      timestamp: new Date().toISOString()
+    });
+  });
+  
   // Scrape URL endpoint
   app.post("/api/scrape", async (req, res) => {
     try {
@@ -21,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ 
         message: "Failed to scrape URL", 
-        error: error.message 
+        error: (error as Error).message 
       });
     }
   });
@@ -58,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ 
         message: "Failed to generate background image", 
-        error: (error as Error).message 
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
@@ -72,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(400).json({ 
         message: "Failed to save ad", 
-        error: error.message 
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
