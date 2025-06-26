@@ -38,7 +38,7 @@ export default function AdGenerator() {
     
     if (isEditMode && dataParam) {
       try {
-        const extensionData = JSON.parse(decodeURIComponent(dataParam));
+        const extensionData = JSON.parse(atob(dataParam));
         console.log('Parsed extension data:', extensionData);
         
         // Convert Chrome extension data format to AdData format
@@ -60,6 +60,7 @@ export default function AdGenerator() {
         }
       } catch (error) {
         console.error('Failed to parse Chrome extension data:', error);
+        console.error('Raw data param:', dataParam);
       }
     }
   }, []);

@@ -221,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Create a lightweight data object without the base64 image
       const editData = {
         title: currentAdData.title,
-        subtitle: currentAdData.subtitle,
         ctaText: currentAdData.ctaText,
         targetAudience: currentAdData.targetAudience,
         industry: currentAdData.industry,
@@ -234,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Exclude backgroundImageUrl to avoid URL length issues
       };
       
-      // Open the main app with the ad data
-      const editUrl = `${backendUrl}/?edit=true&data=${encodeURIComponent(JSON.stringify(editData))}`;
+      // Open the main app with the ad data - use base64 encoding to avoid URI malformation
+      const editUrl = `${backendUrl}/?edit=true&data=${btoa(JSON.stringify(editData))}`;
       chrome.tabs.create({ url: editUrl });
       
     } catch (error) {
