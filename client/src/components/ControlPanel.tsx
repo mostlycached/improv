@@ -55,17 +55,82 @@ export default function ControlPanel({
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Update all form fields with AI-generated data
+      const colorPalettes = {
+        "Corporate Blue": { primary: "#1B365D", accent: "#0066CC", light: "#E3F2FD" },
+        "Sage Green": { primary: "#2D5016", accent: "#00C851", light: "#F0F5E8" },
+        "Warm Terracotta": { primary: "#8B4513", accent: "#FF6B35", light: "#FFF8DC" },
+        "Deep Purple": { primary: "#4A148C", accent: "#9C27B0", light: "#E1BEE7" },
+        "Monochrome": { primary: "#2C2C2C", accent: "#FF4444", light: "#F5F5F5" },
+        "Sunset Orange": { primary: "#CC4125", accent: "#FF5722", light: "#FFE5B4" },
+        "Ocean Teal": { primary: "#006064", accent: "#00BCD4", light: "#B2DFDB" },
+        "Rich Burgundy": { primary: "#722F37", accent: "#E91E63", light: "#F8BBD9" }
+      };
+
+      const selectedPalette = colorPalettes[data.colorPalette as keyof typeof colorPalettes];
+      
       setAdData({
         ...adData,
         title: data.title,
         subtitle: data.subtitle,
         ctaText: data.ctaText,
+        layout: data.layout,
+        primaryColor: selectedPalette?.primary || adData.primaryColor,
+        accentColor: selectedPalette?.accent || adData.accentColor,
       });
+
+      // Update form state variables
+      setPersonArchetype(data.personArchetype);
+      setEnvironment(data.environment);
+      setArtisticStyle(data.artisticStyle);
+      setColorPalette(data.colorPalette);
+
       toast({
         title: "Content Generated",
-        description: "AI has generated new content for your ad",
+        description: "AI has generated comprehensive ad content and settings",
       });
+
+      // Auto-generate background image with AI-selected parameters
+      if (data.personArchetype !== "none" || data.environment !== "none") {
+        try {
+          setIsGenerating(true);
+          const backgroundResponse = await apiRequest("POST", "/api/generate-background", {
+            description: `Professional ${data.industry} advertisement background for ${data.targetAudience}`,
+            style: data.artisticStyle,
+            personArchetype: data.personArchetype,
+            environment: data.environment,
+            colorPalette: data.colorPalette
+          });
+          
+          const backgroundData = await backgroundResponse.json();
+          const updatedAdData = {
+            ...adData,
+            title: data.title,
+            subtitle: data.subtitle,
+            ctaText: data.ctaText,
+            layout: data.layout,
+            primaryColor: selectedPalette?.primary || adData.primaryColor,
+            accentColor: selectedPalette?.accent || adData.accentColor,
+            backgroundImageUrl: backgroundData.imageUrl
+          };
+          setAdData(updatedAdData);
+          
+          toast({
+            title: "Background Generated",
+            description: "AI has created a custom background image",
+          });
+        } catch (error) {
+          console.error('Background generation error:', error);
+          toast({
+            title: "Background Generation Failed",
+            description: "Content was generated but background creation failed",
+            variant: "destructive",
+          });
+        } finally {
+          setIsGenerating(false);
+        }
+      }
     },
     onError: (error: any) => {
       console.error('Mutation error:', error);

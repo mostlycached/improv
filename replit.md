@@ -120,6 +120,10 @@ Changelog:
   - Enhanced AI prompts to generate images using specific color palette instructions
   - Fixed color palettes to include proper vibrant accent colors for CTA buttons
   - Converted layout selector from visual grid to clean dropdown format
+  - Enhanced auto-generation to populate all form fields (style, palette, archetype, environment, layout)
+  - Implemented comprehensive AI strategy analysis that automatically generates background images
+  - Fixed text selection system with proper element bounds tracking and floating toolbar positioning
+  - Moved color controls to advanced section for better UI organization
 ```
 
 ## User Preferences
