@@ -257,7 +257,7 @@ export default function ControlPanel({
             <Button
               onClick={handleAutoGenerate}
               disabled={isGenerating || generateContentMutation.isPending}
-              className="w-full bg-google-green hover:bg-green-600 text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               {generateContentMutation.isPending ? "Generating..." : "Auto-Generate Content"}
