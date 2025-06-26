@@ -19,10 +19,19 @@ document.addEventListener('DOMContentLoaded', function() {
     currentUrl = tabs[0].url;
   });
 
-  // Load settings
-  chrome.storage.sync.get(['backendUrl'], function(result) {
-    if (!result.backendUrl) {
-      showStatus('Please configure backend URL in settings', 'error');
+  // Load settings and test connection
+  chrome.storage.sync.get(['backendUrl'], async function(result) {
+    const backendUrl = result.backendUrl || 'https://improvads.replit.app';
+    
+    try {
+      // Test basic connectivity
+      const healthResponse = await fetch(`${backendUrl}/api/health`);
+      if (!healthResponse.ok) {
+        showStatus(`Backend not responding (${healthResponse.status}). Check settings.`, 'error');
+        generateBtn.disabled = true;
+      }
+    } catch (error) {
+      showStatus('Cannot connect to backend. Check settings.', 'error');
       generateBtn.disabled = true;
     }
   });
@@ -48,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const backendUrl = settings.backendUrl || 'https://improvads.replit.app';
 
       // Generate ad content
+      console.log('Requesting:', `${backendUrl}/api/generate-content`);
       const response = await fetch(`${backendUrl}/api/generate-content`, {
         method: 'POST',
         headers: {
@@ -56,11 +66,25 @@ document.addEventListener('DOMContentLoaded', function() {
         body: JSON.stringify({ url: currentUrl })
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Server error: ${response.status} - ${errorText.substring(0, 200)}`);
       }
 
-      const adContent = await response.json();
+      const responseText = await response.text();
+      console.log('Raw response:', responseText.substring(0, 500));
+      
+      let adContent;
+      try {
+        adContent = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        throw new Error(`Invalid JSON response. Server returned: ${responseText.substring(0, 200)}`);
+      }
       
       // Generate background image
       showStatus('Creating background image...', 'loading');
@@ -80,10 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       if (!imageResponse.ok) {
-        throw new Error(`Image generation failed: ${imageResponse.status}`);
+        const imageErrorText = await imageResponse.text();
+        console.error('Image generation error:', imageErrorText);
+        throw new Error(`Image generation failed: ${imageResponse.status} - ${imageErrorText.substring(0, 200)}`);
       }
 
-      const imageData = await imageResponse.json();
+      const imageResponseText = await imageResponse.text();
+      let imageData;
+      try {
+        imageData = JSON.parse(imageResponseText);
+      } catch (parseError) {
+        console.error('Image JSON parse error:', parseError);
+        throw new Error(`Invalid JSON response from image API. Server returned: ${imageResponseText.substring(0, 200)}`);
+      }
       
       // Store the complete ad data
       currentAdData = {

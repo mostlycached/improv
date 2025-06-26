@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .test-btn { background: #007bff; color: white; }
+        .test-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>AI Ad Generator API Debug Tool</h1>
+    
+    <div>
+        <label>Backend URL:</label>
+        <input type="url" id="backendUrl" value="https://improvads.replit.app" style="width: 300px; padding: 5px; margin: 10px;">
+        <button class="test-btn" onclick="runTests()">Test API Endpoints</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        async function runTests() {
+            const backendUrl = document.getElementById('backendUrl').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="info">Testing API endpoints...</div>';
+            
+            const tests = [
+                { name: 'Health Check', endpoint: '/api/health', method: 'GET' },
+                { name: 'Generate Content', endpoint: '/api/generate-content', method: 'POST', body: { url: 'https://example.com' } },
+                { name: 'Root Path', endpoint: '/', method: 'GET' }
+            ];
+            
+            let results = '';
+            
+            for (const test of tests) {
+                try {
+                    results += `<h3>Testing: ${test.name}</h3>`;
+                    
+                    const options = {
+                        method: test.method,
+                        headers: { 'Content-Type': 'application/json' }
+                    };
+                    
+                    if (test.body) {
+                        options.body = JSON.stringify(test.body);
+                    }
+                    
+                    const response = await fetch(`${backendUrl}${test.endpoint}`, options);
+                    const responseText = await response.text();
+                    
+                    results += `<div class="test-result ${response.ok ? 'success' : 'error'}">`;
+                    results += `<strong>Status:</strong> ${response.status} ${response.statusText}<br>`;
+                    results += `<strong>Content-Type:</strong> ${response.headers.get('content-type')}<br>`;
+                    results += `<strong>CORS Headers:</strong> ${response.headers.get('access-control-allow-origin') || 'None'}<br>`;
+                    results += `<strong>Response Preview:</strong><br>`;
+                    results += `<pre>${responseText.substring(0, 500)}${responseText.length > 500 ? '...' : ''}</pre>`;
+                    results += `</div>`;
+                    
+                } catch (error) {
+                    results += `<div class="test-result error">`;
+                    results += `<strong>Error:</strong> ${error.message}<br>`;
+                    results += `</div>`;
+                }
+            }
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        // Auto-run tests on page load
+        window.onload = () => runTests();
+    </script>
+</body>
+</html>
