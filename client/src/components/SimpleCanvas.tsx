@@ -329,23 +329,13 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
           if (rect) {
             const x = (e.clientX - rect.left) * (800 / rect.width);
             const y = (e.clientY - rect.top) * (600 / rect.height);
-            console.log('Canvas clicked at:', x, y);
-            console.log('Available text elements:', textElementsRef.current);
-            
             // Check if click hit any text element
-            const clickedElement = textElementsRef.current.find(element => {
-              const hit = x >= element.x && x <= element.x + element.width &&
-                         y >= element.y && y <= element.y + element.height;
-              console.log(`Checking element ${element.type}:`, {
-                elementBounds: { x: element.x, y: element.y, width: element.width, height: element.height },
-                clickPoint: { x, y },
-                hit
-              });
-              return hit;
-            });
+            const clickedElement = textElementsRef.current.find(element => 
+              x >= element.x && x <= element.x + element.width &&
+              y >= element.y && y <= element.y + element.height
+            );
             
             if (clickedElement) {
-              console.log('Selected element:', clickedElement);
               onElementSelect({
                 type: clickedElement.type,
                 text: clickedElement.text,
@@ -355,7 +345,6 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
                 height: clickedElement.height
               });
             } else {
-              console.log('No element selected');
               onElementSelect(null);
             }
           }
