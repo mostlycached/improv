@@ -131,6 +131,9 @@ Changelog:
   - Added comprehensive extension with settings, download, edit, and share features
   - Verified production deployment includes all new API endpoints with proper CORS and JSON responses
   - Chrome extension fully functional with deployed service at https://improvads.replit.app
+  - Implemented seamless edit workflow: extension → web app with URL parameter data transfer
+  - Added comprehensive Azure OpenAI error logging for production debugging
+  - Chrome extension edit button opens web app with generated ad data pre-loaded
 ```
 
 ## User Preferences

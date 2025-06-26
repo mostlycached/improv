@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Wand2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ControlPanel from "@/components/ControlPanel";
@@ -19,7 +19,7 @@ export default function AdGenerator() {
     title: "Title",
     ctaText: "Learn More",
     primaryColor: "#4285F4",
-    accentColor: "#EA4335",
+    accentColor: "#EA4335", 
     layout: "bottom-overlay",
     backgroundImageUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY2NzlBOyIgLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNDI4NUY0OyIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0idXJsKCNncmFkKSIvPgo8L3N2Zz4K"
   });
@@ -27,6 +27,34 @@ export default function AdGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedElement, setSelectedElement] = useState<any>(null);
   const canvasRef = useRef<any>(null);
+
+  // Handle URL parameters for Chrome extension edit mode
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isEditMode = urlParams.get('edit') === 'true';
+    const dataParam = urlParams.get('data');
+    
+    if (isEditMode && dataParam) {
+      try {
+        const extensionData = JSON.parse(decodeURIComponent(dataParam));
+        
+        // Convert Chrome extension data format to AdData format
+        const convertedData: AdData = {
+          title: extensionData.title || "Title",
+          ctaText: extensionData.ctaText || "Learn More", 
+          primaryColor: "#4285F4", // Default since extension doesn't provide this
+          accentColor: "#EA4335",  // Default since extension doesn't provide this
+          layout: extensionData.layout || "bottom-overlay",
+          backgroundImageUrl: extensionData.backgroundImageUrl
+        };
+        
+        setAdData(convertedData);
+        console.log('Loaded ad data from Chrome extension:', convertedData);
+      } catch (error) {
+        console.error('Failed to parse Chrome extension data:', error);
+      }
+    }
+  }, []);
 
   const handleExport = () => {
     // Export will be handled by the SimpleCanvas component
