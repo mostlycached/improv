@@ -42,7 +42,7 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
             "colorPalette": "one of: Corporate Blue, Sage Green, Warm Terracotta, Deep Purple, Monochrome, Sunset Orange, Ocean Teal, Rich Burgundy",
             "personArchetype": "one of: none, Healthcare Professional, Construction Worker, Business Executive, Tech Developer, Teacher/Educator, Chef/Restaurant Worker, Retail Associate, Creative Professional, Fitness Trainer, Customer Service Rep",
             "environment": "one of: none, Modern Office, Home Office, Coffee Shop, Retail Store, Medical Facility, Construction Site, Classroom, Restaurant Kitchen, Gym/Fitness Center, Call Center",
-            "layout": "one of: centered, left-aligned, bottom-overlay, split-screen"
+            "layout": "one of: centered, left-aligned, bottom-overlay"
           }`
         },
         {
