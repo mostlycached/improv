@@ -247,45 +247,7 @@ export default function ControlPanel({
           </div>
         </section>
 
-        {/* Color Customization */}
-        <section>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Colors</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-google-gray">Primary Color</Label>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="color"
-                  value={adData.primaryColor}
-                  onChange={(e) => updateAdData("primaryColor", e.target.value)}
-                  className="w-12 h-10 rounded-lg border border-google-border cursor-pointer"
-                />
-                <Input
-                  value={adData.primaryColor}
-                  onChange={(e) => updateAdData("primaryColor", e.target.value)}
-                  className="flex-1 text-sm"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label className="text-google-gray">Accent Color</Label>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="color"
-                  value={adData.accentColor}
-                  onChange={(e) => updateAdData("accentColor", e.target.value)}
-                  className="w-12 h-10 rounded-lg border border-google-border cursor-pointer"
-                />
-                <Input
-                  value={adData.accentColor}
-                  onChange={(e) => updateAdData("accentColor", e.target.value)}
-                  className="flex-1 text-sm"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         {/* Background Options */}
         <section>
@@ -335,6 +297,46 @@ export default function ControlPanel({
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Color Customization */}
+                <div>
+                  <Label className="text-google-gray mb-2 block">Custom Colors</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs text-google-gray mb-1 block">Primary Color</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          value={adData.primaryColor}
+                          onChange={(e) => updateAdData("primaryColor", e.target.value)}
+                          className="w-8 h-8 rounded border border-google-border cursor-pointer"
+                        />
+                        <Input
+                          value={adData.primaryColor}
+                          onChange={(e) => updateAdData("primaryColor", e.target.value)}
+                          className="flex-1 text-xs h-8"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-xs text-google-gray mb-1 block">Accent Color</Label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          value={adData.accentColor}
+                          onChange={(e) => updateAdData("accentColor", e.target.value)}
+                          className="w-8 h-8 rounded border border-google-border cursor-pointer"
+                        />
+                        <Input
+                          value={adData.accentColor}
+                          onChange={(e) => updateAdData("accentColor", e.target.value)}
+                          className="flex-1 text-xs h-8"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Artistic Style Dropdown */}
