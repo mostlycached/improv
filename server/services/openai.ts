@@ -27,12 +27,16 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
   try {
     console.log('Calling Azure OpenAI with content length:', scrapedContent.length);
     
+    // Add timeout to prevent hanging requests
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o", // Azure deployment name
       messages: [
         {
           role: "system",
-          content: `You are an expert marketing strategist and creative director. Analyze the provided website content and generate comprehensive ad campaign data. Respond with JSON in this exact format: {
+          content: `You are an expert marketing strategist and creative director. Analyze the provided website content and generate comprehensive ad campaign data. Respond ONLY with valid JSON in this exact format (no markdown, no extra text): {
             "title": "compelling headline (max 60 chars)",
             "subtitle": "supporting description (max 120 chars)",
             "ctaText": "action button text (max 20 chars)",
@@ -47,15 +51,23 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
         },
         {
           role: "user",
-          content: `Analyze this website content and create ad copy:\n\n${scrapedContent}`
+          content: `Analyze this website content and create ad copy:\n\n${scrapedContent.substring(0, 2000)}`
         }
       ],
       max_tokens: 500,
       temperature: 0.7
+    }, {
+      signal: controller.signal
     });
+
+    clearTimeout(timeoutId);
 
     console.log('Azure OpenAI response received');
     let content = response.choices[0].message.content || "{}";
+    console.log('Raw OpenAI content:', content.substring(0, 200));
+    
+    // Clean up the response more thoroughly
+    content = content.trim();
     
     // Remove markdown code blocks if present
     if (content.includes('```json')) {
@@ -64,6 +76,14 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
       content = content.replace(/```\s*/, '').replace(/```\s*$/, '');
     }
     
+    // Remove any leading/trailing text that's not JSON
+    const jsonStart = content.indexOf('{');
+    const jsonEnd = content.lastIndexOf('}');
+    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+      content = content.substring(jsonStart, jsonEnd + 1);
+    }
+    
+    console.log('Cleaned content for parsing:', content.substring(0, 200));
     const result = JSON.parse(content.trim());
     
     return {
@@ -80,8 +100,44 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('Azure OpenAI API Error:', errorMessage);
-    throw new Error(`Failed to generate ad content: ${errorMessage}`);
+    console.error('=== AZURE OPENAI ERROR DEBUG ===');
+    console.error('Error type:', typeof error);
+    console.error('Error message:', errorMessage);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // Log the full error object structure
+    if (error && typeof error === 'object') {
+      console.error('Error object keys:', Object.keys(error));
+      const anyError = error as any;
+      
+      // Check for different error response structures
+      if (anyError.response) {
+        console.error('Response status:', anyError.response.status);
+        console.error('Response headers:', anyError.response.headers);
+        console.error('Response data:', anyError.response.data);
+      }
+      
+      if (anyError.error) {
+        console.error('Nested error:', anyError.error);
+      }
+      
+      if (anyError.code) {
+        console.error('Error code:', anyError.code);
+      }
+    }
+    console.error('=== END ERROR DEBUG ===');
+    
+    // Extract the most relevant error message
+    let finalErrorMessage = errorMessage;
+    if (error && typeof error === 'object' && 'response' in error) {
+      const apiError = error as any;
+      finalErrorMessage = apiError.response?.data?.error?.message || 
+                         apiError.response?.data?.message || 
+                         apiError.response?.statusText || 
+                         errorMessage;
+    }
+    
+    throw new Error(`Azure OpenAI API Error: ${finalErrorMessage}`);
   }
 }
 
