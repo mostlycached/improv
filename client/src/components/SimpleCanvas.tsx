@@ -64,6 +64,9 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     const width = 800;
     const height = 600;
 
+    // Clear text elements array at the start of each render
+    textElementsRef.current = [];
+
     switch (adData.layout) {
       case 'centered':
         renderCenteredLayout(ctx, width, height);
@@ -154,12 +157,34 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillStyle = adData.primaryColor;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, leftPadding, height / 4);
+    const titleMetrics = ctx.measureText(adData.title);
+    const titleY = height / 4;
+    ctx.fillText(adData.title, leftPadding, titleY);
+    
+    textElementsRef.current.push({
+      type: 'title',
+      text: adData.title,
+      x: leftPadding,
+      y: titleY - 21,
+      width: titleMetrics.width,
+      height: 42
+    });
 
     // Subtitle
     ctx.font = '20px Arial';
     ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, leftPadding, height / 2);
+    const subtitleMetrics = ctx.measureText(adData.subtitle);
+    const subtitleY = height / 2;
+    ctx.fillText(adData.subtitle, leftPadding, subtitleY);
+    
+    textElementsRef.current.push({
+      type: 'subtitle',
+      text: adData.subtitle,
+      x: leftPadding,
+      y: subtitleY - 10,
+      width: subtitleMetrics.width,
+      height: 20
+    });
 
     // CTA Button
     ctx.fillStyle = adData.accentColor;
@@ -172,7 +197,17 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.font = 'bold 16px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.fillText(adData.ctaText, leftPadding + 90, height * 3 / 4);
+    const ctaY = height * 3 / 4;
+    ctx.fillText(adData.ctaText, leftPadding + 90, ctaY);
+    
+    textElementsRef.current.push({
+      type: 'cta',
+      text: adData.ctaText,
+      x: buttonX,
+      y: buttonY,
+      width: 180,
+      height: 45
+    });
   };
 
   const renderBottomOverlayLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -185,11 +220,33 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, width / 2, height * 3 / 4);
+    const titleMetrics = ctx.measureText(adData.title);
+    const titleY = height * 3 / 4;
+    ctx.fillText(adData.title, width / 2, titleY);
+    
+    textElementsRef.current.push({
+      type: 'title',
+      text: adData.title,
+      x: width / 2 - titleMetrics.width / 2,
+      y: titleY - 18,
+      width: titleMetrics.width,
+      height: 36
+    });
 
     // Subtitle
     ctx.font = '18px Arial';
-    ctx.fillText(adData.subtitle, width / 2, height * 5 / 6);
+    const subtitleMetrics = ctx.measureText(adData.subtitle);
+    const subtitleY = height * 5 / 6;
+    ctx.fillText(adData.subtitle, width / 2, subtitleY);
+    
+    textElementsRef.current.push({
+      type: 'subtitle',
+      text: adData.subtitle,
+      x: width / 2 - subtitleMetrics.width / 2,
+      y: subtitleY - 9,
+      width: subtitleMetrics.width,
+      height: 18
+    });
 
     // CTA Button
     ctx.fillStyle = adData.accentColor;
@@ -201,7 +258,17 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     // Button text
     ctx.font = 'bold 14px Arial';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(adData.ctaText, width - 105, height - 40);
+    const ctaY = height - 40;
+    ctx.fillText(adData.ctaText, width - 105, ctaY);
+    
+    textElementsRef.current.push({
+      type: 'cta',
+      text: adData.ctaText,
+      x: buttonX,
+      y: buttonY,
+      width: 150,
+      height: 40
+    });
   };
 
   const renderSplitScreenLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -263,14 +330,22 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
             const x = (e.clientX - rect.left) * (800 / rect.width);
             const y = (e.clientY - rect.top) * (600 / rect.height);
             console.log('Canvas clicked at:', x, y);
+            console.log('Available text elements:', textElementsRef.current);
             
             // Check if click hit any text element
-            const clickedElement = textElementsRef.current.find(element => 
-              x >= element.x && x <= element.x + element.width &&
-              y >= element.y && y <= element.y + element.height
-            );
+            const clickedElement = textElementsRef.current.find(element => {
+              const hit = x >= element.x && x <= element.x + element.width &&
+                         y >= element.y && y <= element.y + element.height;
+              console.log(`Checking element ${element.type}:`, {
+                elementBounds: { x: element.x, y: element.y, width: element.width, height: element.height },
+                clickPoint: { x, y },
+                hit
+              });
+              return hit;
+            });
             
             if (clickedElement) {
+              console.log('Selected element:', clickedElement);
               onElementSelect({
                 type: clickedElement.type,
                 text: clickedElement.text,
@@ -280,6 +355,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
                 height: clickedElement.height
               });
             } else {
+              console.log('No element selected');
               onElementSelect(null);
             }
           }

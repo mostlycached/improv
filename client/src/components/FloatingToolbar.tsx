@@ -50,8 +50,8 @@ export default function FloatingToolbar({
         const scaleY = canvasRect.height / 600;
         
         setPosition({
-          x: canvasRect.left + (elementX * scaleX),
-          y: canvasRect.top + (elementY * scaleY) - 60
+          x: canvasRect.left + (elementX * scaleX) + 20,
+          y: canvasRect.top + (elementY * scaleY) - 80
         });
       } else {
         // Fallback positioning if getBoundingClientRect is not available
@@ -159,7 +159,7 @@ export default function FloatingToolbar({
         <span className="font-medium text-sm">Edit Element</span>
       </div>
 
-      {(selectedElement.type === 'text' || selectedElement.type === 'group') && (
+      {(selectedElement.type === 'title' || selectedElement.type === 'subtitle' || selectedElement.type === 'cta') && (
         <div className="space-y-3">
           <div>
             <Label htmlFor="toolbar-text" className="text-xs font-medium">
