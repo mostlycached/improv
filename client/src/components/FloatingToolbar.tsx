@@ -32,70 +32,52 @@ export default function FloatingToolbar({
   // Update toolbar position and content when element is selected
   useEffect(() => {
     if (selectedElement && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const canvasElement = canvas.getElement();
+      const canvasElement = canvasRef.current;
       const canvasRect = canvasElement.getBoundingClientRect();
       
-      // Position toolbar near selected element
-      const elementBounds = selectedElement.getBoundingRect();
+      // Position toolbar at fixed location above canvas
       setPosition({
-        x: canvasRect.left + elementBounds.left + elementBounds.width / 2,
-        y: canvasRect.top + elementBounds.top - 60
+        x: canvasRect.left + canvasRect.width / 2,
+        y: canvasRect.top - 60
       });
 
-      // Update form values based on selected element
-      if (selectedElement.type === 'text') {
-        setText(selectedElement.text || '');
-        setFontSize(selectedElement.fontSize || 16);
-        setColor(selectedElement.fill || '#000000');
-      } else if (selectedElement.type === 'group') {
-        // Handle grouped elements
-        const textElement = selectedElement.getObjects().find((obj: any) => obj.type === 'text');
-        if (textElement) {
-          setText(textElement.text || '');
-          setFontSize(textElement.fontSize || 16);
-          setColor(textElement.fill || '#000000');
-        }
+      // Update form values based on selected element type
+      if (selectedElement.type === 'title') {
+        setText(adData.title);
+        setColor(adData.primaryColor);
+      } else if (selectedElement.type === 'subtitle') {
+        setText(adData.subtitle);
+        setColor(adData.primaryColor);
+      } else if (selectedElement.type === 'cta') {
+        setText(adData.ctaText);
+        setColor('#ffffff');
       }
 
       setIsVisible(true);
     } else {
       setIsVisible(false);
     }
-  }, [selectedElement, canvasRef]);
+  }, [selectedElement, adData]);
 
   const handleTextChange = (newText: string) => {
     setText(newText);
     if (selectedElement) {
-      if (selectedElement.type === 'text') {
-        selectedElement.set('text', newText);
-      } else if (selectedElement.type === 'group') {
-        const textElement = selectedElement.getObjects().find((obj: any) => obj.type === 'text');
-        if (textElement) {
-          textElement.set('text', newText);
-        }
-      }
-      canvasRef.current?.renderAll();
-      onElementUpdate({ text: newText });
-      
       // Update adData based on element type
       updateAdData(newText, 'text');
+      onElementUpdate({ text: newText });
     }
   };
 
   const updateAdData = (value: any, property: string) => {
-    // Determine which field to update based on the selected element and current text
-    const currentText = selectedElement?.text || (selectedElement?.type === 'group' ? 
-      selectedElement.getObjects().find((obj: any) => obj.type === 'text')?.text : '');
-    
     const newAdData = { ...adData };
     
-    if (currentText === adData.title) {
+    // Update based on selected element type
+    if (selectedElement?.type === 'title') {
       if (property === 'text') newAdData.title = value;
       else if (property === 'color') newAdData.primaryColor = value;
-    } else if (currentText === adData.subtitle) {
+    } else if (selectedElement?.type === 'subtitle') {
       if (property === 'text') newAdData.subtitle = value;
-    } else if (currentText === adData.ctaText) {
+    } else if (selectedElement?.type === 'cta') {
       if (property === 'text') newAdData.ctaText = value;
       else if (property === 'color') newAdData.accentColor = value;
     }
