@@ -152,6 +152,21 @@ export default function ControlPanel({
     setAdData({ ...adData, [key]: value });
   };
 
+  // Handle color palette selection and apply colors immediately
+  const handleColorPaletteChange = (selectedPalette: string) => {
+    setColorPalette(selectedPalette);
+    
+    // Apply colors immediately when palette is selected
+    if (selectedPalette !== "none" && colorPalettes[selectedPalette as keyof typeof colorPalettes]) {
+      const palette = colorPalettes[selectedPalette as keyof typeof colorPalettes];
+      setAdData({
+        ...adData,
+        primaryColor: palette.primary,
+        accentColor: palette.accent,
+      });
+    }
+  };
+
   return (
     <div className="w-2/5 bg-white border-r border-google-border overflow-y-auto">
       <div className="p-6 space-y-8">
@@ -291,7 +306,7 @@ export default function ControlPanel({
                 {/* Color Palette Dropdown */}
                 <div>
                   <Label className="text-google-gray mb-2 block">Color Palette</Label>
-                  <Select value={colorPalette} onValueChange={setColorPalette}>
+                  <Select value={colorPalette} onValueChange={handleColorPaletteChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select color palette (optional)" />
                     </SelectTrigger>
