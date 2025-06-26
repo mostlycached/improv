@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chrome Extension API</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Chrome Extension API Test</h1>
+    <p>This page tests the same API calls your Chrome extension makes.</p>
+    
+    <button onclick="testHealthCheck()">Test Health Check</button>
+    <button onclick="testContentGeneration()">Test Content Generation</button>
+    <button onclick="testImageGeneration()">Test Image Generation</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const backendUrl = 'https://improvads.replit.app';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, isSuccess) {
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.textContent = message;
+            resultsDiv.appendChild(div);
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await fetch(`${backendUrl}/api/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Health Check: ${data.status} - ${data.service}`, true);
+                } else {
+                    addResult(`Health Check Failed: ${response.status}`, false);
+                }
+            } catch (error) {
+                addResult(`Health Check Error: ${error.message}`, false);
+            }
+        }
+
+        async function testContentGeneration() {
+            try {
+                const response = await fetch(`${backendUrl}/api/generate-content`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: 'https://example.com' })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Content Generation: ${data.title} - ${data.ctaText}`, true);
+                } else {
+                    addResult(`Content Generation Failed: ${response.status}`, false);
+                }
+            } catch (error) {
+                addResult(`Content Generation Error: ${error.message}`, false);
+            }
+        }
+
+        async function testImageGeneration() {
+            try {
+                const response = await fetch(`${backendUrl}/api/generate-background`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        description: 'Modern office workspace',
+                        style: 'Photorealistic',
+                        personArchetype: 'Professional',
+                        environment: 'Office',
+                        colorPalette: 'Corporate Blue'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`Image Generation: ${data.imageUrl ? 'Success' : 'No URL'}`, !!data.imageUrl);
+                } else {
+                    const errorText = await response.text();
+                    addResult(`Image Generation Failed: ${response.status} - ${errorText.substring(0, 100)}`, false);
+                }
+            } catch (error) {
+                addResult(`Image Generation Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>
