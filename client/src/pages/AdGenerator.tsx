@@ -16,8 +16,8 @@ export interface AdData {
 
 export default function AdGenerator() {
   const [adData, setAdData] = useState<AdData>({
-    title: "Transform Your Business Today",
-    ctaText: "Get Started Free",
+    title: "Title",
+    ctaText: "Learn More",
     primaryColor: "#4285F4",
     accentColor: "#EA4335",
     layout: "bottom-overlay",
