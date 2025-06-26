@@ -112,7 +112,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    const titleLines = wrapText(ctx, adData.title, width - 100); // Leave 50px padding on each side
+    const titleLines = wrapText(ctx, adData.title, width - 200); // Leave 100px padding on each side
     const lineHeight = 70;
     const totalHeight = titleLines.length * lineHeight;
     const startY = height / 2 - totalHeight / 2 + lineHeight / 2;
@@ -166,7 +166,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     
-    const titleLines = wrapText(ctx, adData.title, width - leftPadding - 60); // Leave padding on both sides
+    const titleLines = wrapText(ctx, adData.title, width - leftPadding - 120); // Leave more padding on both sides
     const lineHeight = 62;
     const totalHeight = titleLines.length * lineHeight;
     const startY = height / 2 - totalHeight / 2 + lineHeight / 2;
@@ -216,22 +216,32 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(0, height * 2 / 3, width, height / 3);
 
-    // Title
+    // Title with text wrapping
     ctx.font = 'bold 52px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height * 5 / 6;
-    ctx.fillText(adData.title, width / 2, titleY);
     
+    const titleLines = wrapText(ctx, adData.title, width - 160); // More aggressive padding
+    const lineHeight = 58;
+    const totalHeight = titleLines.length * lineHeight;
+    const overlayHeight = height / 3;
+    const startY = height * 2 / 3 + overlayHeight / 2 - totalHeight / 2 + lineHeight / 2;
+    
+    titleLines.forEach((line, index) => {
+      const y = startY + (index * lineHeight);
+      ctx.fillText(line, width / 2, y);
+    });
+    
+    // Store title element bounds
+    const maxLineWidth = Math.max(...titleLines.map(line => ctx.measureText(line).width));
     textElementsRef.current.push({
       type: 'title',
       text: adData.title,
-      x: width / 2 - titleMetrics.width / 2,
-      y: titleY - 26,
-      width: titleMetrics.width,
-      height: 52
+      x: width / 2 - maxLineWidth / 2,
+      y: startY - lineHeight / 2,
+      width: maxLineWidth,
+      height: totalHeight
     });
 
     // CTA Button
