@@ -115,6 +115,9 @@ Changelog:
   - Enhanced API to handle separate archetype and environment parameters
   - Added explicit no-text/no-logo instructions to prevent text overlay in generated images
   - Organized advanced options under collapsible UI to reduce interface overwhelm
+  - Implemented professional color palette system with 8 trending palettes
+  - Added automatic CTA color updating based on selected palette accent color
+  - Enhanced AI prompts to generate images using specific color palette instructions
 ```
 
 ## User Preferences
