@@ -26,9 +26,16 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size
-    canvas.width = 800;
-    canvas.height = 600;
+    // Set canvas size based on layout
+    if (adData.layout === 'split-screen') {
+      // 3:2 aspect ratio for split-screen layout
+      canvas.width = 800;
+      canvas.height = 1200; // 800 * 1.5 = 1200 (3:2 ratio)
+    } else {
+      // Default 4:3 aspect ratio for other layouts
+      canvas.width = 800;
+      canvas.height = 600;
+    }
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -165,29 +172,29 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillStyle = adData.primaryColor;
     ctx.fillRect(0, 0, splitX, height);
 
-    // Title on left
-    ctx.font = 'bold 38px Arial';
+    // Title on left - positioned higher for better balance in tall layout
+    ctx.font = 'bold 42px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, splitX / 2, height / 3);
+    ctx.fillText(adData.title, splitX / 2, height * 0.4);
 
-    // Subtitle on right
-    ctx.font = '22px Arial';
+    // Subtitle on right - positioned in upper third
+    ctx.font = '24px Arial';
     ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height / 2);
+    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height * 0.35);
 
-    // CTA Button on right
+    // CTA Button on right - positioned in middle area
     ctx.fillStyle = adData.accentColor;
     const buttonX = splitX + (splitX / 2) - 80;
-    const buttonY = height * 2 / 3 - 22;
+    const buttonY = height * 0.55 - 22;
     roundRect(ctx, buttonX, buttonY, 160, 45, 6);
     ctx.fill();
 
     // Button text
     ctx.font = 'bold 16px Arial';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 2 / 3);
+    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 0.55);
   };
 
   const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {

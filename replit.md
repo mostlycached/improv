@@ -107,6 +107,8 @@ Changelog:
   - Fixed web scraper with proper gzip/deflate decompression for authentic content extraction
   - Resolved Azure OpenAI JSON parsing issues with markdown code block handling
   - Canvas now displays ad previews with SimpleCanvas fallback implementation
+  - Implemented 3:2 aspect ratio (1024x1536) for split-screen layout optimization
+  - Layout-specific image generation based on currently selected layout
 ```
 
 ## User Preferences
