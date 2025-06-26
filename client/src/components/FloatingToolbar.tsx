@@ -34,14 +34,24 @@ export default function FloatingToolbar({
     if (selectedElement && canvasRef.current) {
       const canvasElement = canvasRef.current;
       
+      // Populate text field with selected element's text
+      setText(selectedElement.text || '');
+      
       // Check if canvasElement is a proper DOM element with getBoundingClientRect method
       if (canvasElement && typeof canvasElement.getBoundingClientRect === 'function') {
         const canvasRect = canvasElement.getBoundingClientRect();
         
-        // Position toolbar at fixed location above canvas
+        // Position toolbar near the selected element
+        const elementX = selectedElement.x || 0;
+        const elementY = selectedElement.y || 0;
+        
+        // Scale coordinates to match canvas display size
+        const scaleX = canvasRect.width / 800;
+        const scaleY = canvasRect.height / 600;
+        
         setPosition({
-          x: canvasRect.left + canvasRect.width / 2,
-          y: canvasRect.top - 60
+          x: canvasRect.left + (elementX * scaleX),
+          y: canvasRect.top + (elementY * scaleY) - 60
         });
       } else {
         // Fallback positioning if getBoundingClientRect is not available
@@ -53,14 +63,14 @@ export default function FloatingToolbar({
 
       // Update form values based on selected element type
       if (selectedElement.type === 'title') {
-        setText(adData.title);
         setColor(adData.primaryColor);
+        setFontSize(48);
       } else if (selectedElement.type === 'subtitle') {
-        setText(adData.subtitle);
-        setColor(adData.primaryColor);
+        setColor('#333333');
+        setFontSize(24);
       } else if (selectedElement.type === 'cta') {
-        setText(adData.ctaText);
         setColor('#ffffff');
+        setFontSize(18);
       }
 
       setIsVisible(true);

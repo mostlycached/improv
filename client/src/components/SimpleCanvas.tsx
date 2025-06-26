@@ -9,6 +9,14 @@ interface SimpleCanvasProps {
 
 const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSelect, selectedElement }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textElementsRef = useRef<Array<{
+    type: 'title' | 'subtitle' | 'cta';
+    text: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>>([]);
 
   // Expose canvas methods to parent component
   useImperativeHandle(ref, () => ({
@@ -75,17 +83,44 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
   };
 
   const renderCenteredLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    // Clear text elements array
+    textElementsRef.current = [];
+
     // Title
     ctx.font = 'bold 48px Arial';
     ctx.fillStyle = adData.primaryColor;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, width / 2, height / 3);
+    const titleMetrics = ctx.measureText(adData.title);
+    const titleY = height / 3;
+    ctx.fillText(adData.title, width / 2, titleY);
+    
+    // Store title element bounds
+    textElementsRef.current.push({
+      type: 'title',
+      text: adData.title,
+      x: width / 2 - titleMetrics.width / 2,
+      y: titleY - 24,
+      width: titleMetrics.width,
+      height: 48
+    });
 
     // Subtitle
     ctx.font = '24px Arial';
     ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, width / 2, height / 2);
+    const subtitleMetrics = ctx.measureText(adData.subtitle);
+    const subtitleY = height / 2;
+    ctx.fillText(adData.subtitle, width / 2, subtitleY);
+    
+    // Store subtitle element bounds
+    textElementsRef.current.push({
+      type: 'subtitle',
+      text: adData.subtitle,
+      x: width / 2 - subtitleMetrics.width / 2,
+      y: subtitleY - 12,
+      width: subtitleMetrics.width,
+      height: 24
+    });
 
     // CTA Button
     ctx.fillStyle = adData.accentColor;
@@ -97,7 +132,18 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     // Button text
     ctx.font = 'bold 18px Arial';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(adData.ctaText, width / 2, height * 2 / 3);
+    const ctaY = height * 2 / 3;
+    ctx.fillText(adData.ctaText, width / 2, ctaY);
+    
+    // Store CTA element bounds
+    textElementsRef.current.push({
+      type: 'cta',
+      text: adData.ctaText,
+      x: buttonX,
+      y: buttonY,
+      width: 200,
+      height: 50
+    });
   };
 
   const renderLeftAlignedLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -212,14 +258,30 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
         width={800}
         height={600}
         onClick={(e) => {
-          // Simple click handling for demo
           const rect = canvasRef.current?.getBoundingClientRect();
           if (rect) {
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = (e.clientX - rect.left) * (800 / rect.width);
+            const y = (e.clientY - rect.top) * (600 / rect.height);
             console.log('Canvas clicked at:', x, y);
-            // For now, just trigger selection of a mock element
-            onElementSelect({ type: 'text', text: adData.title });
+            
+            // Check if click hit any text element
+            const clickedElement = textElementsRef.current.find(element => 
+              x >= element.x && x <= element.x + element.width &&
+              y >= element.y && y <= element.y + element.height
+            );
+            
+            if (clickedElement) {
+              onElementSelect({
+                type: clickedElement.type,
+                text: clickedElement.text,
+                x: clickedElement.x,
+                y: clickedElement.y,
+                width: clickedElement.width,
+                height: clickedElement.height
+              });
+            } else {
+              onElementSelect(null);
+            }
           }
         }}
       />
