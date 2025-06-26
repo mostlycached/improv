@@ -44,17 +44,58 @@ export default function AdGenerator() {
           ctaText: extensionData.ctaText || "Learn More", 
           primaryColor: "#4285F4", // Default since extension doesn't provide this
           accentColor: "#EA4335",  // Default since extension doesn't provide this
-          layout: extensionData.layout || "bottom-overlay",
-          backgroundImageUrl: extensionData.backgroundImageUrl
+          layout: extensionData.layout || "bottom-overlay"
+          // backgroundImageUrl will be generated below
         };
         
         setAdData(convertedData);
         console.log('Loaded ad data from Chrome extension:', convertedData);
+        
+        // Trigger background image generation with the extension data
+        if (extensionData.artisticStyle && extensionData.personArchetype && extensionData.environment) {
+          generateBackgroundFromExtension(extensionData);
+        }
       } catch (error) {
         console.error('Failed to parse Chrome extension data:', error);
       }
     }
   }, []);
+
+  // Generate background image from Chrome extension data
+  const generateBackgroundFromExtension = async (extensionData: any) => {
+    try {
+      setIsGenerating(true);
+      
+      const response = await fetch('/api/generate-background', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: extensionData.title || 'Professional advertisement',
+          style: extensionData.artisticStyle || 'Photorealistic',
+          personArchetype: extensionData.personArchetype || 'Business Executive',
+          environment: extensionData.environment || 'Modern Office',
+          colorPalette: extensionData.colorPalette || 'Corporate Blue'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAdData(prev => ({
+          ...prev,
+          backgroundImageUrl: data.imageUrl
+        }));
+        console.log('Generated background image for Chrome extension edit');
+      } else {
+        console.error('Failed to generate background image:', response.status);
+      }
+    } catch (error) {
+      console.error('Error generating background image:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleExport = () => {
     // Export will be handled by the SimpleCanvas component

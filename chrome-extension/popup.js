@@ -218,8 +218,24 @@ document.addEventListener('DOMContentLoaded', function() {
       const settings = await chrome.storage.sync.get(['backendUrl']);
       const backendUrl = settings.backendUrl || 'https://improvads.replit.app';
       
+      // Create a lightweight data object without the base64 image
+      const editData = {
+        title: currentAdData.title,
+        subtitle: currentAdData.subtitle,
+        ctaText: currentAdData.ctaText,
+        targetAudience: currentAdData.targetAudience,
+        industry: currentAdData.industry,
+        artisticStyle: currentAdData.artisticStyle,
+        colorPalette: currentAdData.colorPalette,
+        personArchetype: currentAdData.personArchetype,
+        environment: currentAdData.environment,
+        layout: currentAdData.layout,
+        sourceUrl: currentAdData.sourceUrl
+        // Exclude backgroundImageUrl to avoid URL length issues
+      };
+      
       // Open the main app with the ad data
-      const editUrl = `${backendUrl}/?edit=true&data=${encodeURIComponent(JSON.stringify(currentAdData))}`;
+      const editUrl = `${backendUrl}/?edit=true&data=${encodeURIComponent(JSON.stringify(editData))}`;
       chrome.tabs.create({ url: editUrl });
       
     } catch (error) {

@@ -134,6 +134,7 @@ Changelog:
   - Implemented seamless edit workflow: extension → web app with URL parameter data transfer
   - Added comprehensive Azure OpenAI error logging for production debugging
   - Chrome extension edit button opens web app with generated ad data pre-loaded
+  - Optimized edit URL to exclude base64 images, triggering background generation in web app instead
 ```
 
 ## User Preferences
