@@ -33,13 +33,23 @@ export default function FloatingToolbar({
   useEffect(() => {
     if (selectedElement && canvasRef.current) {
       const canvasElement = canvasRef.current;
-      const canvasRect = canvasElement.getBoundingClientRect();
       
-      // Position toolbar at fixed location above canvas
-      setPosition({
-        x: canvasRect.left + canvasRect.width / 2,
-        y: canvasRect.top - 60
-      });
+      // Check if canvasElement is a proper DOM element with getBoundingClientRect method
+      if (canvasElement && typeof canvasElement.getBoundingClientRect === 'function') {
+        const canvasRect = canvasElement.getBoundingClientRect();
+        
+        // Position toolbar at fixed location above canvas
+        setPosition({
+          x: canvasRect.left + canvasRect.width / 2,
+          y: canvasRect.top - 60
+        });
+      } else {
+        // Fallback positioning if getBoundingClientRect is not available
+        setPosition({
+          x: 400,
+          y: 100
+        });
+      }
 
       // Update form values based on selected element type
       if (selectedElement.type === 'title') {
