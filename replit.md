@@ -135,6 +135,8 @@ Changelog:
   - Added comprehensive Azure OpenAI error logging for production debugging
   - Chrome extension edit button opens web app with generated ad data pre-loaded
   - Optimized edit URL to exclude base64 images, triggering background generation in web app instead
+  - Fixed URI malformation error by switching from URI encoding to base64 encoding for edit URLs
+  - Removed deprecated subtitle field from Chrome extension and web app data structures
 ```
 
 ## User Preferences
