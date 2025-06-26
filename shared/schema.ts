@@ -33,7 +33,6 @@ export const generateContentSchema = z.object({
 export const generateBackgroundSchema = z.object({
   description: z.string(),
   style: z.enum(["photorealistic", "vector", "professional"]).default("photorealistic"),
-  layout: z.string().default("centered"),
 });
 
 export type UrlScrapeRequest = z.infer<typeof urlScrapeSchema>;

@@ -52,8 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate background image
   app.post("/api/generate-background", async (req, res) => {
     try {
-      const { description, style, layout } = generateBackgroundSchema.parse(req.body);
-      const imageUrl = await generateBackgroundImage(description, style, layout);
+      const { description, style } = generateBackgroundSchema.parse(req.body);
+      const imageUrl = await generateBackgroundImage(description, style);
       res.json({ imageUrl });
     } catch (error) {
       res.status(400).json({ 

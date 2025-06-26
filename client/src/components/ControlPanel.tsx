@@ -63,8 +63,7 @@ export default function ControlPanel({
       try {
         const response = await apiRequest("POST", "/api/generate-background", { 
           description,
-          style: "photorealistic",
-          layout: adData.layout
+          style: "photorealistic"
         });
         return await response.json();
       } catch (error) {

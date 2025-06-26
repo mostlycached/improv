@@ -26,16 +26,9 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size based on layout
-    if (adData.layout === 'split-screen') {
-      // 3:2 aspect ratio for split-screen layout
-      canvas.width = 800;
-      canvas.height = 1200; // 800 * 1.5 = 1200 (3:2 ratio)
-    } else {
-      // Default 4:3 aspect ratio for other layouts
-      canvas.width = 800;
-      canvas.height = 600;
-    }
+    // Set canvas size
+    canvas.width = 800;
+    canvas.height = 600;
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -47,20 +40,10 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = () => {
-        // For split-screen layout with 3:2 images, fit to fill entire canvas
-        if (adData.layout === 'split-screen') {
-          // Scale to cover entire canvas, maintaining aspect ratio
-          const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-          const x = (canvas.width - img.width * scale) / 2;
-          const y = (canvas.height - img.height * scale) / 2;
-          ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-        } else {
-          // Standard scaling for other layouts
-          const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-          const x = (canvas.width - img.width * scale) / 2;
-          const y = (canvas.height - img.height * scale) / 2;
-          ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-        }
+        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
         renderLayoutElements(ctx);
       };
       img.src = adData.backgroundImageUrl;
@@ -182,29 +165,29 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillStyle = adData.primaryColor;
     ctx.fillRect(0, 0, splitX, height);
 
-    // Title on left - positioned higher for better balance in tall layout
-    ctx.font = 'bold 42px Arial';
+    // Title on left
+    ctx.font = 'bold 38px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, splitX / 2, height * 0.4);
+    ctx.fillText(adData.title, splitX / 2, height / 3);
 
-    // Subtitle on right - positioned in upper third
-    ctx.font = '24px Arial';
+    // Subtitle on right
+    ctx.font = '22px Arial';
     ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height * 0.35);
+    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height / 2);
 
-    // CTA Button on right - positioned in middle area
+    // CTA Button on right
     ctx.fillStyle = adData.accentColor;
     const buttonX = splitX + (splitX / 2) - 80;
-    const buttonY = height * 0.55 - 22;
+    const buttonY = height * 2 / 3 - 22;
     roundRect(ctx, buttonX, buttonY, 160, 45, 6);
     ctx.fill();
 
     // Button text
     ctx.font = 'bold 16px Arial';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 0.55);
+    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 2 / 3);
   };
 
   const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
@@ -221,24 +204,13 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.closePath();
   };
 
-  // Calculate display dimensions based on layout
-  const canvasWidth = 800;
-  const canvasHeight = adData.layout === 'split-screen' ? 1200 : 600;
-  const displayWidth = adData.layout === 'split-screen' ? 400 : 500;  // Scale down for display
-  const displayHeight = adData.layout === 'split-screen' ? 600 : 375; // Maintain aspect ratio
-
   return (
     <div className="relative">
       <canvas
         ref={canvasRef}
         className="border border-gray-200 rounded-lg shadow-sm cursor-pointer"
-        width={canvasWidth}
-        height={canvasHeight}
-        style={{
-          width: `${displayWidth}px`,
-          height: `${displayHeight}px`,
-          maxWidth: '100%'
-        }}
+        width={800}
+        height={600}
         onClick={(e) => {
           // Simple click handling for demo
           const rect = canvasRef.current?.getBoundingClientRect();

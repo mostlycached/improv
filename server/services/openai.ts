@@ -70,22 +70,12 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
   }
 }
 
-export async function generateBackgroundImage(description: string, style: string = "photorealistic", layout: string = "centered"): Promise<string> {
+export async function generateBackgroundImage(description: string, style: string = "photorealistic"): Promise<string> {
   try {
-    // Determine image size based on layout
-    let imageSize = "1024x1024"; // Default for centered, left-aligned, bottom-overlay
-    if (layout === "split-screen") {
-      imageSize = "1024x1536"; // 3:2 aspect ratio for better vertical fit
-    }
-    
     let prompt = "";
     
     if (style === "photorealistic") {
-      if (layout === "split-screen") {
-        prompt = `Professional, high-quality photograph of ${description} in a modern workplace setting. Clean, well-lit environment with soft natural lighting. Corporate, business-focused atmosphere. Professional attire. Vertical composition (3:2 aspect ratio) with clean modern design, perfect for split-screen layout. High resolution, crisp details, photorealistic style.`;
-      } else {
-        prompt = `Professional, high-quality photograph of ${description} in a modern workplace setting. Clean, well-lit environment with soft natural lighting. Corporate, business-focused atmosphere. Professional attire. High resolution, crisp details, photorealistic style.`;
-      }
+      prompt = `Professional, high-quality photograph of ${description} in a modern workplace setting. Clean, well-lit environment with soft natural lighting. Corporate, business-focused atmosphere. Professional attire. High resolution, crisp details, photorealistic style.`;
     } else if (style === "vector") {
       prompt = `Clean, modern vector illustration of ${description}. Minimalist design with flat colors and geometric shapes. Professional business theme. Simple, elegant composition suitable for marketing materials.`;
     } else {
@@ -106,7 +96,7 @@ export async function generateBackgroundImage(description: string, style: string
       },
       body: JSON.stringify({
         prompt: prompt,
-        size: imageSize,
+        size: "1024x1024",
         quality: "medium",
         output_compression: 100,
         output_format: "png",
