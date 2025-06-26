@@ -91,8 +91,8 @@ export default function AdGenerator() {
             />
           </div>
 
-          {/* Export Button */}
-          <div className="p-6 bg-white border-t border-google-border flex justify-center">
+          {/* Export Button - Hidden for now */}
+          {/* <div className="p-6 bg-white border-t border-google-border flex justify-center">
             <Button 
               onClick={handleExport}
               className="bg-google-blue hover:bg-blue-600 text-white px-8 py-2"
@@ -100,7 +100,7 @@ export default function AdGenerator() {
               <Download className="w-4 h-4 mr-2" />
               Export PNG
             </Button>
-          </div>
+          </div> */}
 
           {/* Status Bar */}
           <div className="px-6 py-4 bg-white border-t border-google-border">
