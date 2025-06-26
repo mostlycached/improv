@@ -7,7 +7,6 @@ import FloatingToolbar from "@/components/FloatingToolbar";
 
 export interface AdData {
   title: string;
-  subtitle: string;
   ctaText: string;
   primaryColor: string;
   accentColor: string;
@@ -18,7 +17,6 @@ export interface AdData {
 export default function AdGenerator() {
   const [adData, setAdData] = useState<AdData>({
     title: "Transform Your Business Today",
-    subtitle: "Discover powerful tools and strategies that will revolutionize how you work",
     ctaText: "Get Started Free",
     primaryColor: "#4285F4",
     accentColor: "#EA4335",

@@ -73,7 +73,6 @@ export default function ControlPanel({
       setAdData({
         ...adData,
         title: data.title,
-        subtitle: data.subtitle,
         ctaText: data.ctaText,
         layout: data.layout,
         primaryColor: selectedPalette?.primary || adData.primaryColor,
@@ -288,17 +287,7 @@ export default function ControlPanel({
               />
             </div>
             
-            <div>
-              <Label htmlFor="subtitle" className="text-google-gray">Subtitle</Label>
-              <Textarea
-                id="subtitle"
-                placeholder="Supporting text that explains your offer"
-                rows={2}
-                value={adData.subtitle}
-                onChange={(e) => updateAdData("subtitle", e.target.value)}
-                className="resize-none"
-              />
-            </div>
+
             
             <div>
               <Label htmlFor="ctaText" className="text-google-gray">Call to Action</Label>

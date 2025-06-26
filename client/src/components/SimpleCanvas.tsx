@@ -180,36 +180,21 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     ctx.fillRect(0, height * 2 / 3, width, height / 3);
 
     // Title
-    ctx.font = 'bold 36px Arial';
+    ctx.font = 'bold 52px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height * 3 / 4;
+    const titleY = height * 5 / 6;
     ctx.fillText(adData.title, width / 2, titleY);
     
     textElementsRef.current.push({
       type: 'title',
       text: adData.title,
       x: width / 2 - titleMetrics.width / 2,
-      y: titleY - 18,
+      y: titleY - 26,
       width: titleMetrics.width,
-      height: 36
-    });
-
-    // Subtitle
-    ctx.font = '18px Arial';
-    const subtitleMetrics = ctx.measureText(adData.subtitle);
-    const subtitleY = height * 5 / 6;
-    ctx.fillText(adData.subtitle, width / 2, subtitleY);
-    
-    textElementsRef.current.push({
-      type: 'subtitle',
-      text: adData.subtitle,
-      x: width / 2 - subtitleMetrics.width / 2,
-      y: subtitleY - 9,
-      width: subtitleMetrics.width,
-      height: 18
+      height: 52
     });
 
     // CTA Button
