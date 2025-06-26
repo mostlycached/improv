@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutSelector from "./LayoutSelector";
@@ -24,6 +25,9 @@ export default function ControlPanel({
   setIsGenerating 
 }: ControlPanelProps) {
   const [productUrl, setProductUrl] = useState("");
+  const [personArchetype, setPersonArchetype] = useState("");
+  const [environment, setEnvironment] = useState("");
+  const [artisticStyle, setArtisticStyle] = useState("Photorealistic");
   const { toast } = useToast();
 
   const generateContentMutation = useMutation({
@@ -63,7 +67,9 @@ export default function ControlPanel({
       try {
         const response = await apiRequest("POST", "/api/generate-background", { 
           description,
-          style: "photorealistic"
+          style: artisticStyle,
+          personArchetype: personArchetype || undefined,
+          environment: environment || undefined
         });
         return await response.json();
       } catch (error) {

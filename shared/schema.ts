@@ -33,7 +33,7 @@ export const generateContentSchema = z.object({
 export const generateBackgroundSchema = z.object({
   description: z.string(),
   style: z.enum(["Photorealistic", "Geometric Abstraction", "Neo-Memphis", "Gradient Silhouette", "Brutalist Gradient"]).default("Photorealistic"),
-  archetype: z.enum([
+  personArchetype: z.enum([
     "Healthcare Professional",
     "Construction Worker", 
     "Business Executive",
@@ -44,6 +44,18 @@ export const generateBackgroundSchema = z.object({
     "Creative Professional",
     "Fitness Trainer",
     "Customer Service Rep"
+  ]).optional(),
+  environment: z.enum([
+    "Modern Office",
+    "Hospital/Medical Facility",
+    "Construction Site",
+    "Tech Workspace",
+    "Classroom",
+    "Restaurant Kitchen",
+    "Retail Store",
+    "Creative Studio",
+    "Gym/Fitness Center",
+    "Call Center"
   ]).optional(),
 });
 

@@ -70,16 +70,49 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
   }
 }
 
-export async function generateBackgroundImage(description: string, style: string = "Photorealistic", archetype?: string): Promise<string> {
+export async function generateBackgroundImage(description: string, style: string = "Photorealistic", personArchetype?: string, environment?: string): Promise<string> {
   try {
     let prompt = "";
     
-    if (style === "photorealistic") {
-      prompt = `Professional, high-quality photograph of ${description} in a modern workplace setting. Clean, well-lit environment with soft natural lighting. Corporate, business-focused atmosphere. Professional attire. High resolution, crisp details, photorealistic style.`;
-    } else if (style === "vector") {
-      prompt = `Clean, modern vector illustration of ${description}. Minimalist design with flat colors and geometric shapes. Professional business theme. Simple, elegant composition suitable for marketing materials.`;
-    } else {
-      prompt = `Professional business setting with ${description}. Modern office environment, clean aesthetic, corporate atmosphere. Suitable for business advertising and marketing materials.`;
+    // Build base prompt with rule of thirds composition
+    let basePrompt = "Professional advertisement background image using rule of thirds composition";
+    
+    // Add person archetype if specified
+    if (personArchetype) {
+      basePrompt += `, featuring a ${personArchetype.toLowerCase()}`;
+      basePrompt += " positioned in the top right hotspot with their face clearly visible";
+    }
+    
+    // Add environment if specified
+    if (environment) {
+      basePrompt += `, set in a ${environment.toLowerCase()}`;
+      basePrompt += " with the horizon line positioned in the bottom left hotspot";
+    }
+    
+    // Add original description
+    if (description) {
+      basePrompt += `, ${description}`;
+    }
+    
+    // Apply artistic style
+    switch (style) {
+      case "Photorealistic":
+        prompt = `${basePrompt}, photorealistic style, high quality, professional lighting, sharp details`;
+        break;
+      case "Geometric Abstraction":
+        prompt = `${basePrompt}, geometric abstraction style, clean lines, bold shapes, minimal color palette`;
+        break;
+      case "Neo-Memphis":
+        prompt = `${basePrompt}, neo-memphis design style, vibrant colors, geometric patterns, bold contrasts`;
+        break;
+      case "Gradient Silhouette":
+        prompt = `${basePrompt}, gradient silhouette style, smooth color transitions, simplified forms`;
+        break;
+      case "Brutalist Gradient":
+        prompt = `${basePrompt}, brutalist gradient style, bold typography, strong contrasts, architectural elements`;
+        break;
+      default:
+        prompt = `${basePrompt}, professional style`;
     }
 
     console.log('Generating background image with Azure OpenAI');
