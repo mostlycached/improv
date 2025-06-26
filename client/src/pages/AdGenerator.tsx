@@ -59,7 +59,7 @@ export default function AdGenerator() {
             <div className="w-8 h-8 bg-google-blue rounded-lg flex items-center justify-center">
               <Wand2 className="text-white text-sm w-4 h-4" />
             </div>
-            <h1 className="text-xl font-semibold text-gray-900">Improv Ads</h1>
+            <h1 className="text-xl font-semibold text-gray-900">🧩 Improv Ads</h1>
           </div>
           <Button 
             onClick={handleExport}
@@ -70,7 +70,6 @@ export default function AdGenerator() {
           </Button>
         </div>
       </header>
-
       <div className="flex h-[calc(100vh-72px)]">
         {/* Control Panel */}
         <ControlPanel 
@@ -119,7 +118,6 @@ export default function AdGenerator() {
           </div>
         </div>
       </div>
-
       {/* Floating Toolbar */}
       <FloatingToolbar 
         selectedElement={selectedElement}
@@ -129,7 +127,6 @@ export default function AdGenerator() {
         adData={adData}
         setAdData={setAdData}
       />
-
       {/* Loading Overlay */}
       {isGenerating && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

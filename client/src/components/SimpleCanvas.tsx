@@ -87,12 +87,12 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     textElementsRef.current = [];
 
     // Title
-    ctx.font = 'bold 48px Arial';
+    ctx.font = 'bold 64px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height / 3;
+    const titleY = height / 2;
     ctx.fillText(adData.title, width / 2, titleY);
     
     // Store title element bounds
@@ -100,26 +100,9 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
       type: 'title',
       text: adData.title,
       x: width / 2 - titleMetrics.width / 2,
-      y: titleY - 24,
+      y: titleY - 32,
       width: titleMetrics.width,
-      height: 48
-    });
-
-    // Subtitle
-    ctx.font = '24px Arial';
-    ctx.fillStyle = '#ffffff';
-    const subtitleMetrics = ctx.measureText(adData.subtitle);
-    const subtitleY = height / 2;
-    ctx.fillText(adData.subtitle, width / 2, subtitleY);
-    
-    // Store subtitle element bounds
-    textElementsRef.current.push({
-      type: 'subtitle',
-      text: adData.subtitle,
-      x: width / 2 - subtitleMetrics.width / 2,
-      y: subtitleY - 12,
-      width: subtitleMetrics.width,
-      height: 24
+      height: 64
     });
 
     // CTA Button
@@ -150,37 +133,21 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     const leftPadding = 60;
 
     // Title
-    ctx.font = 'bold 42px Arial';
+    ctx.font = 'bold 56px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height / 4;
+    const titleY = height / 2;
     ctx.fillText(adData.title, leftPadding, titleY);
     
     textElementsRef.current.push({
       type: 'title',
       text: adData.title,
       x: leftPadding,
-      y: titleY - 21,
+      y: titleY - 28,
       width: titleMetrics.width,
-      height: 42
-    });
-
-    // Subtitle
-    ctx.font = '20px Arial';
-    ctx.fillStyle = '#ffffff';
-    const subtitleMetrics = ctx.measureText(adData.subtitle);
-    const subtitleY = height / 2;
-    ctx.fillText(adData.subtitle, leftPadding, subtitleY);
-    
-    textElementsRef.current.push({
-      type: 'subtitle',
-      text: adData.subtitle,
-      x: leftPadding,
-      y: subtitleY - 10,
-      width: subtitleMetrics.width,
-      height: 20
+      height: 56
     });
 
     // CTA Button
