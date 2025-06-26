@@ -29,7 +29,20 @@ export default function ControlPanel({
   const [personArchetype, setPersonArchetype] = useState("none");
   const [environment, setEnvironment] = useState("none");
   const [artisticStyle, setArtisticStyle] = useState("Photorealistic");
+  const [colorPalette, setColorPalette] = useState("none");
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+
+  // Professional color palettes with hex values
+  const colorPalettes = {
+    "Corporate Blue": { primary: "#1B365D", accent: "#4A90E2", light: "#E3F2FD" },
+    "Sage Green": { primary: "#2D5016", accent: "#87A96B", light: "#F0F5E8" },
+    "Warm Terracotta": { primary: "#D2691E", accent: "#E2725B", light: "#FFF8DC" },
+    "Deep Purple": { primary: "#4A148C", accent: "#7B1FA2", light: "#E1BEE7" },
+    "Monochrome": { primary: "#2C2C2C", accent: "#757575", light: "#F5F5F5" },
+    "Sunset Orange": { primary: "#FF6B35", accent: "#FF8E53", light: "#FFE5B4" },
+    "Ocean Teal": { primary: "#006064", accent: "#26A69A", light: "#B2DFDB" },
+    "Rich Burgundy": { primary: "#722F37", accent: "#B71C1C", light: "#F8BBD9" }
+  };
   const { toast } = useToast();
 
   const generateContentMutation = useMutation({
@@ -71,7 +84,8 @@ export default function ControlPanel({
           description,
           style: artisticStyle,
           personArchetype: personArchetype === "none" ? undefined : personArchetype,
-          environment: environment === "none" ? undefined : environment
+          environment: environment === "none" ? undefined : environment,
+          colorPalette: colorPalette === "none" ? undefined : colorPalette
         });
         return await response.json();
       } catch (error) {
@@ -80,9 +94,21 @@ export default function ControlPanel({
       }
     },
     onSuccess: (data) => {
+      // Update background image and apply color palette to CTA if selected
+      const updates: Partial<AdData> = {
+        backgroundImageUrl: data.imageUrl,
+      };
+      
+      // Apply accent color from selected palette to CTA
+      if (colorPalette !== "none" && colorPalettes[colorPalette as keyof typeof colorPalettes]) {
+        const palette = colorPalettes[colorPalette as keyof typeof colorPalettes];
+        updates.accentColor = palette.accent;
+        updates.primaryColor = palette.primary;
+      }
+      
       setAdData({
         ...adData,
-        backgroundImageUrl: data.imageUrl,
+        ...updates,
       });
       toast({
         title: "Background Generated",
@@ -262,6 +288,40 @@ export default function ControlPanel({
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-3 pt-2">
+                {/* Color Palette Dropdown */}
+                <div>
+                  <Label className="text-google-gray mb-2 block">Color Palette</Label>
+                  <Select value={colorPalette} onValueChange={setColorPalette}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select color palette (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {Object.entries(colorPalettes).map(([name, colors]) => (
+                        <SelectItem key={name} value={name}>
+                          <div className="flex items-center space-x-2">
+                            <div className="flex space-x-1">
+                              <div 
+                                className="w-3 h-3 rounded-full border border-gray-300" 
+                                style={{ backgroundColor: colors.primary }}
+                              />
+                              <div 
+                                className="w-3 h-3 rounded-full border border-gray-300" 
+                                style={{ backgroundColor: colors.accent }}
+                              />
+                              <div 
+                                className="w-3 h-3 rounded-full border border-gray-300" 
+                                style={{ backgroundColor: colors.light }}
+                              />
+                            </div>
+                            <span>{name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Artistic Style Dropdown */}
                 <div>
                   <Label className="text-google-gray mb-2 block">Artistic Style</Label>

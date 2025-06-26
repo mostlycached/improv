@@ -57,6 +57,16 @@ export const generateBackgroundSchema = z.object({
     "Gym/Fitness Center",
     "Call Center"
   ]).optional(),
+  colorPalette: z.enum([
+    "Corporate Blue",
+    "Sage Green",
+    "Warm Terracotta",
+    "Deep Purple",
+    "Monochrome",
+    "Sunset Orange",
+    "Ocean Teal",
+    "Rich Burgundy"
+  ]).optional(),
 });
 
 export type UrlScrapeRequest = z.infer<typeof urlScrapeSchema>;
