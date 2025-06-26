@@ -94,25 +94,27 @@ export async function generateBackgroundImage(description: string, style: string
       basePrompt += `, ${description}`;
     }
     
-    // Apply artistic style
+    // Apply artistic style with explicit no-text instruction
+    const noTextInstruction = "NO TEXT, NO LOGOS, NO WORDS, NO TYPOGRAPHY in the image";
+    
     switch (style) {
       case "Photorealistic":
-        prompt = `${basePrompt}, photorealistic style, high quality, professional lighting, sharp details`;
+        prompt = `${basePrompt}, photorealistic style, high quality, professional lighting, sharp details. ${noTextInstruction}`;
         break;
       case "Geometric Abstraction":
-        prompt = `${basePrompt}, geometric abstraction style, clean lines, bold shapes, minimal color palette`;
+        prompt = `${basePrompt}, geometric abstraction style, clean lines, bold shapes, minimal color palette. ${noTextInstruction}`;
         break;
       case "Neo-Memphis":
-        prompt = `${basePrompt}, neo-memphis design style, vibrant colors, geometric patterns, bold contrasts`;
+        prompt = `${basePrompt}, neo-memphis design style, vibrant colors, geometric patterns, bold contrasts. ${noTextInstruction}`;
         break;
       case "Gradient Silhouette":
-        prompt = `${basePrompt}, gradient silhouette style, smooth color transitions, simplified forms`;
+        prompt = `${basePrompt}, gradient silhouette style, smooth color transitions, simplified forms. ${noTextInstruction}`;
         break;
       case "Brutalist Gradient":
-        prompt = `${basePrompt}, brutalist gradient style, bold typography, strong contrasts, architectural elements`;
+        prompt = `${basePrompt}, brutalist gradient style, strong contrasts, architectural elements. ${noTextInstruction}`;
         break;
       default:
-        prompt = `${basePrompt}, professional style`;
+        prompt = `${basePrompt}, professional style. ${noTextInstruction}`;
     }
 
     console.log('Generating background image with Azure OpenAI');

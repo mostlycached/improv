@@ -113,6 +113,8 @@ Changelog:
   - Implemented 5 artistic styles: Photorealistic, Geometric Abstraction, Neo-Memphis, Gradient Silhouette, Brutalist Gradient
   - Updated Azure OpenAI prompts to use rule of thirds composition with face positioning in top right hotspot
   - Enhanced API to handle separate archetype and environment parameters
+  - Added explicit no-text/no-logo instructions to prevent text overlay in generated images
+  - Organized advanced options under collapsible UI to reduce interface overwhelm
 ```
 
 ## User Preferences

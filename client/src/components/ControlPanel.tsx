@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Sparkles, Upload, Link } from "lucide-react";
+import { Sparkles, Upload, Link, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutSelector from "./LayoutSelector";
@@ -28,6 +29,7 @@ export default function ControlPanel({
   const [personArchetype, setPersonArchetype] = useState("none");
   const [environment, setEnvironment] = useState("none");
   const [artisticStyle, setArtisticStyle] = useState("Photorealistic");
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const { toast } = useToast();
 
   const generateContentMutation = useMutation({
@@ -248,68 +250,82 @@ export default function ControlPanel({
         <section>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Background</h2>
           <div className="space-y-3">
-            {/* Artistic Style Dropdown */}
-            <div>
-              <Label className="text-google-gray mb-2 block">Artistic Style</Label>
-              <Select value={artisticStyle} onValueChange={setArtisticStyle}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select artistic style" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Photorealistic">Photorealistic</SelectItem>
-                  <SelectItem value="Geometric Abstraction">Geometric Abstraction</SelectItem>
-                  <SelectItem value="Neo-Memphis">Neo-Memphis</SelectItem>
-                  <SelectItem value="Gradient Silhouette">Gradient Silhouette</SelectItem>
-                  <SelectItem value="Brutalist Gradient">Brutalist Gradient</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Advanced Options Collapsible */}
+            <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between p-2 h-auto text-left"
+                >
+                  <span className="text-sm font-medium text-google-gray">Advanced Options</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${isAdvancedOpen ? 'rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 pt-2">
+                {/* Artistic Style Dropdown */}
+                <div>
+                  <Label className="text-google-gray mb-2 block">Artistic Style</Label>
+                  <Select value={artisticStyle} onValueChange={setArtisticStyle}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select artistic style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Photorealistic">Photorealistic</SelectItem>
+                      <SelectItem value="Geometric Abstraction">Geometric Abstraction</SelectItem>
+                      <SelectItem value="Neo-Memphis">Neo-Memphis</SelectItem>
+                      <SelectItem value="Gradient Silhouette">Gradient Silhouette</SelectItem>
+                      <SelectItem value="Brutalist Gradient">Brutalist Gradient</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Person Archetype Dropdown */}
-            <div>
-              <Label className="text-google-gray mb-2 block">Person Archetype</Label>
-              <Select value={personArchetype} onValueChange={setPersonArchetype}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select person type (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="Healthcare Professional">Healthcare Professional</SelectItem>
-                  <SelectItem value="Construction Worker">Construction Worker</SelectItem>
-                  <SelectItem value="Business Executive">Business Executive</SelectItem>
-                  <SelectItem value="Tech Developer">Tech Developer</SelectItem>
-                  <SelectItem value="Teacher/Educator">Teacher/Educator</SelectItem>
-                  <SelectItem value="Chef/Restaurant Worker">Chef/Restaurant Worker</SelectItem>
-                  <SelectItem value="Retail Associate">Retail Associate</SelectItem>
-                  <SelectItem value="Creative Professional">Creative Professional</SelectItem>
-                  <SelectItem value="Fitness Trainer">Fitness Trainer</SelectItem>
-                  <SelectItem value="Customer Service Rep">Customer Service Rep</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Person Archetype Dropdown */}
+                <div>
+                  <Label className="text-google-gray mb-2 block">Person Archetype</Label>
+                  <Select value={personArchetype} onValueChange={setPersonArchetype}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select person type (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="Healthcare Professional">Healthcare Professional</SelectItem>
+                      <SelectItem value="Construction Worker">Construction Worker</SelectItem>
+                      <SelectItem value="Business Executive">Business Executive</SelectItem>
+                      <SelectItem value="Tech Developer">Tech Developer</SelectItem>
+                      <SelectItem value="Teacher/Educator">Teacher/Educator</SelectItem>
+                      <SelectItem value="Chef/Restaurant Worker">Chef/Restaurant Worker</SelectItem>
+                      <SelectItem value="Retail Associate">Retail Associate</SelectItem>
+                      <SelectItem value="Creative Professional">Creative Professional</SelectItem>
+                      <SelectItem value="Fitness Trainer">Fitness Trainer</SelectItem>
+                      <SelectItem value="Customer Service Rep">Customer Service Rep</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Environment Dropdown */}
-            <div>
-              <Label className="text-google-gray mb-2 block">Environment</Label>
-              <Select value={environment} onValueChange={setEnvironment}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select environment (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="Modern Office">Modern Office</SelectItem>
-                  <SelectItem value="Hospital/Medical Facility">Hospital/Medical Facility</SelectItem>
-                  <SelectItem value="Construction Site">Construction Site</SelectItem>
-                  <SelectItem value="Tech Workspace">Tech Workspace</SelectItem>
-                  <SelectItem value="Classroom">Classroom</SelectItem>
-                  <SelectItem value="Restaurant Kitchen">Restaurant Kitchen</SelectItem>
-                  <SelectItem value="Retail Store">Retail Store</SelectItem>
-                  <SelectItem value="Creative Studio">Creative Studio</SelectItem>
-                  <SelectItem value="Gym/Fitness Center">Gym/Fitness Center</SelectItem>
-                  <SelectItem value="Call Center">Call Center</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Environment Dropdown */}
+                <div>
+                  <Label className="text-google-gray mb-2 block">Environment</Label>
+                  <Select value={environment} onValueChange={setEnvironment}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select environment (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="Modern Office">Modern Office</SelectItem>
+                      <SelectItem value="Hospital/Medical Facility">Hospital/Medical Facility</SelectItem>
+                      <SelectItem value="Construction Site">Construction Site</SelectItem>
+                      <SelectItem value="Tech Workspace">Tech Workspace</SelectItem>
+                      <SelectItem value="Classroom">Classroom</SelectItem>
+                      <SelectItem value="Restaurant Kitchen">Restaurant Kitchen</SelectItem>
+                      <SelectItem value="Retail Store">Retail Store</SelectItem>
+                      <SelectItem value="Creative Studio">Creative Studio</SelectItem>
+                      <SelectItem value="Gym/Fitness Center">Gym/Fitness Center</SelectItem>
+                      <SelectItem value="Call Center">Call Center</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
             <Button
               onClick={handleGenerateBackground}
