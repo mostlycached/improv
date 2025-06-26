@@ -59,13 +59,7 @@ export default function AdGenerator() {
             </div>
             <h1 className="text-xl font-semibold text-gray-900">🧩 Improv Ads</h1>
           </div>
-          <Button 
-            onClick={handleExport}
-            className="bg-google-blue hover:bg-blue-600 text-white"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export Ad
-          </Button>
+
         </div>
       </header>
       <div className="flex h-[calc(100vh-72px)]">
@@ -95,6 +89,17 @@ export default function AdGenerator() {
               onElementSelect={setSelectedElement}
               selectedElement={selectedElement}
             />
+          </div>
+
+          {/* Export Button */}
+          <div className="p-6 bg-white border-t border-google-border flex justify-center">
+            <Button 
+              onClick={handleExport}
+              className="bg-google-blue hover:bg-blue-600 text-white px-8 py-2"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export PNG
+            </Button>
           </div>
 
           {/* Status Bar */}
