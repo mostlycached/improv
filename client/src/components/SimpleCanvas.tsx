@@ -325,7 +325,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
           link.href = dataURL;
           link.click();
         }}
-        className="absolute top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 transition-colors"
+        className="absolute top-4 right-4 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 transition-colors bg-[#b38f8f]"
       >
         Export PNG
       </button>
