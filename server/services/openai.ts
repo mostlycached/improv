@@ -16,6 +16,11 @@ export interface GeneratedContent {
   ctaText: string;
   targetAudience: string;
   industry: string;
+  artisticStyle: string;
+  colorPalette: string;
+  personArchetype: string;
+  environment: string;
+  layout: string;
 }
 
 export async function generateAdContent(scrapedContent: string): Promise<GeneratedContent> {
@@ -27,12 +32,17 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
       messages: [
         {
           role: "system",
-          content: `You are an expert marketing copywriter. Analyze the provided website content and generate compelling ad copy. Respond with JSON in this exact format: {
+          content: `You are an expert marketing strategist and creative director. Analyze the provided website content and generate comprehensive ad campaign data. Respond with JSON in this exact format: {
             "title": "compelling headline (max 60 chars)",
             "subtitle": "supporting description (max 120 chars)",
             "ctaText": "action button text (max 20 chars)",
             "targetAudience": "describe target audience",
-            "industry": "industry category"
+            "industry": "industry category",
+            "artisticStyle": "one of: Photorealistic, Geometric Abstraction, Neo-Memphis, Gradient Silhouette, Brutalist Gradient",
+            "colorPalette": "one of: Corporate Blue, Sage Green, Warm Terracotta, Deep Purple, Monochrome, Sunset Orange, Ocean Teal, Rich Burgundy",
+            "personArchetype": "one of: none, Healthcare Professional, Construction Worker, Business Executive, Tech Developer, Teacher/Educator, Chef/Restaurant Worker, Retail Associate, Creative Professional, Fitness Trainer, Customer Service Rep",
+            "environment": "one of: none, Modern Office, Home Office, Coffee Shop, Retail Store, Medical Facility, Construction Site, Classroom, Restaurant Kitchen, Gym/Fitness Center, Call Center",
+            "layout": "one of: centered, left-aligned, bottom-overlay, split-screen"
           }`
         },
         {
@@ -61,7 +71,12 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
       subtitle: result.subtitle || "Discover powerful solutions", 
       ctaText: result.ctaText || "Get Started",
       targetAudience: result.targetAudience || "professionals",
-      industry: result.industry || "business"
+      industry: result.industry || "business",
+      artisticStyle: result.artisticStyle || "Photorealistic",
+      colorPalette: result.colorPalette || "Corporate Blue",
+      personArchetype: result.personArchetype || "Business Executive",
+      environment: result.environment || "Modern Office",
+      layout: result.layout || "centered"
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
