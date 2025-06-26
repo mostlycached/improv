@@ -77,9 +77,6 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
       case 'bottom-overlay':
         renderBottomOverlayLayout(ctx, width, height);
         break;
-      case 'split-screen':
-        renderSplitScreenLayout(ctx, width, height);
-        break;
       default:
         renderCenteredLayout(ctx, width, height);
     }
@@ -271,37 +268,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     });
   };
 
-  const renderSplitScreenLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    const splitX = width / 2;
 
-    // Left section background
-    ctx.fillStyle = adData.primaryColor;
-    ctx.fillRect(0, 0, splitX, height);
-
-    // Title on left
-    ctx.font = 'bold 38px Arial';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(adData.title, splitX / 2, height / 3);
-
-    // Subtitle on right
-    ctx.font = '22px Arial';
-    ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, splitX + (splitX / 2), height / 2);
-
-    // CTA Button on right
-    ctx.fillStyle = adData.accentColor;
-    const buttonX = splitX + (splitX / 2) - 80;
-    const buttonY = height * 2 / 3 - 22;
-    roundRect(ctx, buttonX, buttonY, 160, 45, 6);
-    ctx.fill();
-
-    // Button text
-    ctx.font = 'bold 16px Arial';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(adData.ctaText, splitX + (splitX / 2), height * 2 / 3);
-  };
 
   const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
     ctx.beginPath();

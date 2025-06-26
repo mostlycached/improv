@@ -10,8 +10,7 @@ export default function LayoutSelector({ selectedLayout, onLayoutSelect }: Layou
   const layouts = [
     { id: "centered", name: "Centered", description: "Title and text centered in the middle" },
     { id: "left-aligned", name: "Left Aligned", description: "Content aligned to the left side" },
-    { id: "bottom-overlay", name: "Bottom Overlay", description: "Text overlaid at the bottom" },
-    { id: "split-screen", name: "Split Screen", description: "Content split between left and right" }
+    { id: "bottom-overlay", name: "Bottom Overlay", description: "Text overlaid at the bottom" }
   ];
 
   const currentLayout = layouts.find(layout => layout.id === selectedLayout);
