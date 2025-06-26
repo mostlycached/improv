@@ -269,18 +269,7 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
           }
         }}
       />
-      <button
-        onClick={() => {
-          const dataURL = canvasRef.current?.toDataURL() || '';
-          const link = document.createElement('a');
-          link.download = 'ad-design.png';
-          link.href = dataURL;
-          link.click();
-        }}
-        className="absolute top-4 right-4 text-white px-4 py-2 rounded-md shadow-lg hover:bg-blue-700 transition-colors bg-[#b38f8f]"
-      >
-        Export PNG
-      </button>
+      
     </div>
   );
 });
