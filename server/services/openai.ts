@@ -70,7 +70,7 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
   }
 }
 
-export async function generateBackgroundImage(description: string, style: string = "photorealistic"): Promise<string> {
+export async function generateBackgroundImage(description: string, style: string = "Photorealistic", archetype?: string): Promise<string> {
   try {
     let prompt = "";
     

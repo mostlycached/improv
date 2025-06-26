@@ -32,7 +32,19 @@ export const generateContentSchema = z.object({
 
 export const generateBackgroundSchema = z.object({
   description: z.string(),
-  style: z.enum(["photorealistic", "vector", "professional"]).default("photorealistic"),
+  style: z.enum(["Photorealistic", "Geometric Abstraction", "Neo-Memphis", "Gradient Silhouette", "Brutalist Gradient"]).default("Photorealistic"),
+  archetype: z.enum([
+    "Healthcare Professional",
+    "Construction Worker", 
+    "Business Executive",
+    "Tech Developer",
+    "Teacher/Educator",
+    "Chef/Restaurant Worker",
+    "Retail Associate",
+    "Creative Professional",
+    "Fitness Trainer",
+    "Customer Service Rep"
+  ]).optional(),
 });
 
 export type UrlScrapeRequest = z.infer<typeof urlScrapeSchema>;
