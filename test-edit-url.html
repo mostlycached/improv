@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Edit URL</title>
+</head>
+<body>
+    <h1>Testing Edit URL Parameters</h1>
+    <div id="output"></div>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isEditMode = urlParams.get('edit') === 'true';
+        const dataParam = urlParams.get('data');
+        
+        const output = document.getElementById('output');
+        output.innerHTML = `
+            <p><strong>URL:</strong> ${window.location.href}</p>
+            <p><strong>Edit Mode:</strong> ${isEditMode}</p>
+            <p><strong>Has Data:</strong> ${!!dataParam}</p>
+            <p><strong>Raw Data:</strong> ${dataParam}</p>
+        `;
+        
+        if (dataParam) {
+            try {
+                const decoded = decodeURIComponent(dataParam);
+                const parsed = JSON.parse(decoded);
+                output.innerHTML += `
+                    <p><strong>Decoded:</strong> ${decoded}</p>
+                    <p><strong>Parsed:</strong> ${JSON.stringify(parsed, null, 2)}</p>
+                `;
+            } catch (e) {
+                output.innerHTML += `<p><strong>Parse Error:</strong> ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

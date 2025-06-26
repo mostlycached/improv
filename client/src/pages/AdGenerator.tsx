@@ -34,9 +34,12 @@ export default function AdGenerator() {
     const isEditMode = urlParams.get('edit') === 'true';
     const dataParam = urlParams.get('data');
     
+    console.log('Edit mode check:', { isEditMode, hasDataParam: !!dataParam, url: window.location.href });
+    
     if (isEditMode && dataParam) {
       try {
         const extensionData = JSON.parse(decodeURIComponent(dataParam));
+        console.log('Parsed extension data:', extensionData);
         
         // Convert Chrome extension data format to AdData format
         const convertedData: AdData = {
