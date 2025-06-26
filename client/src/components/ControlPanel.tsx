@@ -32,16 +32,16 @@ export default function ControlPanel({
   const [colorPalette, setColorPalette] = useState("none");
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  // Professional color palettes with hex values
+  // Professional color palettes with hex values - researched trending 2024/2025 combinations
   const colorPalettes = {
-    "Corporate Blue": { primary: "#1B365D", accent: "#4A90E2", light: "#E3F2FD" },
-    "Sage Green": { primary: "#2D5016", accent: "#87A96B", light: "#F0F5E8" },
-    "Warm Terracotta": { primary: "#D2691E", accent: "#E2725B", light: "#FFF8DC" },
-    "Deep Purple": { primary: "#4A148C", accent: "#7B1FA2", light: "#E1BEE7" },
-    "Monochrome": { primary: "#2C2C2C", accent: "#757575", light: "#F5F5F5" },
-    "Sunset Orange": { primary: "#FF6B35", accent: "#FF8E53", light: "#FFE5B4" },
-    "Ocean Teal": { primary: "#006064", accent: "#26A69A", light: "#B2DFDB" },
-    "Rich Burgundy": { primary: "#722F37", accent: "#B71C1C", light: "#F8BBD9" }
+    "Corporate Blue": { primary: "#1B365D", accent: "#0066CC", light: "#E3F2FD" },
+    "Sage Green": { primary: "#2D5016", accent: "#00C851", light: "#F0F5E8" },
+    "Warm Terracotta": { primary: "#8B4513", accent: "#FF6B35", light: "#FFF8DC" },
+    "Deep Purple": { primary: "#4A148C", accent: "#9C27B0", light: "#E1BEE7" },
+    "Monochrome": { primary: "#2C2C2C", accent: "#FF4444", light: "#F5F5F5" },
+    "Sunset Orange": { primary: "#CC4125", accent: "#FF5722", light: "#FFE5B4" },
+    "Ocean Teal": { primary: "#006064", accent: "#00BCD4", light: "#B2DFDB" },
+    "Rich Burgundy": { primary: "#722F37", accent: "#E91E63", light: "#F8BBD9" }
   };
   const { toast } = useToast();
 

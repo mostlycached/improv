@@ -97,14 +97,14 @@ export async function generateBackgroundImage(description: string, style: string
     // Add color palette instruction
     if (colorPalette) {
       const paletteInstructions = {
-        "Corporate Blue": "using a professional blue color palette with navy #1B365D, bright blue #4A90E2, and light blue #E3F2FD tones",
-        "Sage Green": "using a calming sage green palette with forest green #2D5016, sage #87A96B, and light sage #F0F5E8 tones",
-        "Warm Terracotta": "using warm terracotta palette with burnt orange #D2691E, terracotta #E2725B, and cream #FFF8DC tones",
-        "Deep Purple": "using a sophisticated purple palette with deep purple #4A148C, medium purple #7B1FA2, and lavender #E1BEE7 tones",
-        "Monochrome": "using a monochrome palette with charcoal #2C2C2C, medium gray #757575, and light gray #F5F5F5 tones",
-        "Sunset Orange": "using a vibrant sunset palette with deep orange #FF6B35, coral #FF8E53, and peach #FFE5B4 tones",
-        "Ocean Teal": "using an ocean teal palette with deep teal #006064, turquoise #26A69A, and light aqua #B2DFDB tones",
-        "Rich Burgundy": "using a rich burgundy palette with wine #722F37, burgundy #B71C1C, and rose #F8BBD9 tones"
+        "Corporate Blue": "using a professional blue color palette with navy #1B365D, bright blue #0066CC, and light blue #E3F2FD tones",
+        "Sage Green": "using a calming sage green palette with forest green #2D5016, vibrant green #00C851, and light sage #F0F5E8 tones",
+        "Warm Terracotta": "using warm terracotta palette with brown #8B4513, bright orange #FF6B35, and cream #FFF8DC tones",
+        "Deep Purple": "using a sophisticated purple palette with deep purple #4A148C, bright purple #9C27B0, and lavender #E1BEE7 tones",
+        "Monochrome": "using a monochrome palette with charcoal #2C2C2C, bright red accent #FF4444, and light gray #F5F5F5 tones",
+        "Sunset Orange": "using a vibrant sunset palette with dark red #CC4125, bright orange #FF5722, and peach #FFE5B4 tones",
+        "Ocean Teal": "using an ocean teal palette with deep teal #006064, bright cyan #00BCD4, and light aqua #B2DFDB tones",
+        "Rich Burgundy": "using a rich burgundy palette with wine #722F37, bright pink #E91E63, and rose #F8BBD9 tones"
       };
       
       basePrompt += `, ${paletteInstructions[colorPalette as keyof typeof paletteInstructions]}`;

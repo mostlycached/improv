@@ -118,6 +118,8 @@ Changelog:
   - Implemented professional color palette system with 8 trending palettes
   - Added automatic CTA color updating based on selected palette accent color
   - Enhanced AI prompts to generate images using specific color palette instructions
+  - Fixed color palettes to include proper vibrant accent colors for CTA buttons
+  - Converted layout selector from visual grid to clean dropdown format
 ```
 
 ## User Preferences
