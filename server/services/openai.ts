@@ -51,7 +51,7 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
         }
       ],
       max_tokens: 500,
-      temperature: 1.1
+      temperature: 0.7
     });
 
     console.log('Azure OpenAI response received');
