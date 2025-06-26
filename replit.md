@@ -137,6 +137,13 @@ Changelog:
   - Optimized edit URL to exclude base64 images, triggering background generation in web app instead
   - Fixed URI malformation error by switching from URI encoding to base64 encoding for edit URLs
   - Removed deprecated subtitle field from Chrome extension and web app data structures
+- June 26, 2025. Expanded professional coverage system
+  - Increased person archetypes from 10 to 26 comprehensive professional categories
+  - Added Accounting, Administrative, Arts & Design, Business Development, Community Services, Consulting, Customer Success, Engineering, Entrepreneurship, Finance, HR, IT, Legal, Marketing, Media & Communications, Military/Security, Operations, Product Management, Project Management, Purchasing, Quality Assurance, Real Estate, Research, and Sales professionals
+  - Expanded environments from 10 to 26 matching professional workspaces
+  - Added specialized environments: Accounting Office, Design Studio, Corporate Boardroom, Community Center, Consulting Office, Engineering Lab, Startup Office, Financial Institution, HR Department, Law Office, Marketing Agency, Media Studio, Security Command Center, Operations Floor, Product Development Lab, Project War Room, Procurement Office, Quality Control Lab, Real Estate Office, Research Laboratory, Sales Floor
+  - Updated AI content generation prompts to include all expanded professional categories
+  - Enhanced schema validation to support comprehensive professional targeting
 ```
 
 ## User Preferences

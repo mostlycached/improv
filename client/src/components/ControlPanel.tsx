@@ -419,16 +419,32 @@ export default function ControlPanel({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
+                      <SelectItem value="Accounting Professional">Accounting Professional</SelectItem>
+                      <SelectItem value="Administrative Assistant">Administrative Assistant</SelectItem>
+                      <SelectItem value="Arts & Design Professional">Arts & Design Professional</SelectItem>
+                      <SelectItem value="Business Development Manager">Business Development Manager</SelectItem>
+                      <SelectItem value="Community Services Worker">Community Services Worker</SelectItem>
+                      <SelectItem value="Consultant">Consultant</SelectItem>
+                      <SelectItem value="Customer Success Manager">Customer Success Manager</SelectItem>
+                      <SelectItem value="Educator">Educator</SelectItem>
+                      <SelectItem value="Engineer">Engineer</SelectItem>
+                      <SelectItem value="Entrepreneur">Entrepreneur</SelectItem>
+                      <SelectItem value="Finance Professional">Finance Professional</SelectItem>
                       <SelectItem value="Healthcare Professional">Healthcare Professional</SelectItem>
-                      <SelectItem value="Construction Worker">Construction Worker</SelectItem>
-                      <SelectItem value="Business Executive">Business Executive</SelectItem>
-                      <SelectItem value="Tech Developer">Tech Developer</SelectItem>
-                      <SelectItem value="Teacher/Educator">Teacher/Educator</SelectItem>
-                      <SelectItem value="Chef/Restaurant Worker">Chef/Restaurant Worker</SelectItem>
-                      <SelectItem value="Retail Associate">Retail Associate</SelectItem>
-                      <SelectItem value="Creative Professional">Creative Professional</SelectItem>
-                      <SelectItem value="Fitness Trainer">Fitness Trainer</SelectItem>
-                      <SelectItem value="Customer Service Rep">Customer Service Rep</SelectItem>
+                      <SelectItem value="HR Professional">HR Professional</SelectItem>
+                      <SelectItem value="IT Professional">IT Professional</SelectItem>
+                      <SelectItem value="Legal Professional">Legal Professional</SelectItem>
+                      <SelectItem value="Marketing Specialist">Marketing Specialist</SelectItem>
+                      <SelectItem value="Media & Communications Professional">Media & Communications Professional</SelectItem>
+                      <SelectItem value="Military/Security Professional">Military/Security Professional</SelectItem>
+                      <SelectItem value="Operations Manager">Operations Manager</SelectItem>
+                      <SelectItem value="Product Manager">Product Manager</SelectItem>
+                      <SelectItem value="Project Manager">Project Manager</SelectItem>
+                      <SelectItem value="Purchasing Professional">Purchasing Professional</SelectItem>
+                      <SelectItem value="Quality Assurance Specialist">Quality Assurance Specialist</SelectItem>
+                      <SelectItem value="Real Estate Professional">Real Estate Professional</SelectItem>
+                      <SelectItem value="Researcher">Researcher</SelectItem>
+                      <SelectItem value="Sales Professional">Sales Professional</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -442,16 +458,32 @@ export default function ControlPanel({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="Modern Office">Modern Office</SelectItem>
-                      <SelectItem value="Hospital/Medical Facility">Hospital/Medical Facility</SelectItem>
-                      <SelectItem value="Construction Site">Construction Site</SelectItem>
-                      <SelectItem value="Tech Workspace">Tech Workspace</SelectItem>
+                      <SelectItem value="Accounting Office">Accounting Office</SelectItem>
+                      <SelectItem value="Administrative Office">Administrative Office</SelectItem>
+                      <SelectItem value="Design Studio">Design Studio</SelectItem>
+                      <SelectItem value="Corporate Boardroom">Corporate Boardroom</SelectItem>
+                      <SelectItem value="Community Center">Community Center</SelectItem>
+                      <SelectItem value="Consulting Office">Consulting Office</SelectItem>
+                      <SelectItem value="Customer Service Center">Customer Service Center</SelectItem>
                       <SelectItem value="Classroom">Classroom</SelectItem>
-                      <SelectItem value="Restaurant Kitchen">Restaurant Kitchen</SelectItem>
-                      <SelectItem value="Retail Store">Retail Store</SelectItem>
-                      <SelectItem value="Creative Studio">Creative Studio</SelectItem>
-                      <SelectItem value="Gym/Fitness Center">Gym/Fitness Center</SelectItem>
-                      <SelectItem value="Call Center">Call Center</SelectItem>
+                      <SelectItem value="Engineering Lab">Engineering Lab</SelectItem>
+                      <SelectItem value="Startup Office">Startup Office</SelectItem>
+                      <SelectItem value="Financial Institution">Financial Institution</SelectItem>
+                      <SelectItem value="Hospital/Medical Facility">Hospital/Medical Facility</SelectItem>
+                      <SelectItem value="HR Department">HR Department</SelectItem>
+                      <SelectItem value="Tech Workspace">Tech Workspace</SelectItem>
+                      <SelectItem value="Law Office">Law Office</SelectItem>
+                      <SelectItem value="Marketing Agency">Marketing Agency</SelectItem>
+                      <SelectItem value="Media Studio">Media Studio</SelectItem>
+                      <SelectItem value="Security Command Center">Security Command Center</SelectItem>
+                      <SelectItem value="Operations Floor">Operations Floor</SelectItem>
+                      <SelectItem value="Product Development Lab">Product Development Lab</SelectItem>
+                      <SelectItem value="Project War Room">Project War Room</SelectItem>
+                      <SelectItem value="Procurement Office">Procurement Office</SelectItem>
+                      <SelectItem value="Quality Control Lab">Quality Control Lab</SelectItem>
+                      <SelectItem value="Real Estate Office">Real Estate Office</SelectItem>
+                      <SelectItem value="Research Laboratory">Research Laboratory</SelectItem>
+                      <SelectItem value="Sales Floor">Sales Floor</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

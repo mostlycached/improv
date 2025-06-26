@@ -44,8 +44,8 @@ export async function generateAdContent(scrapedContent: string): Promise<Generat
             "industry": "industry category",
             "artisticStyle": "one of: Photorealistic, Geometric Abstraction, Neo-Memphis, Gradient Silhouette, Brutalist Gradient",
             "colorPalette": "one of: Corporate Blue, Sage Green, Warm Terracotta, Deep Purple, Monochrome, Sunset Orange, Ocean Teal, Rich Burgundy",
-            "personArchetype": "one of: none, Healthcare Professional, Construction Worker, Business Executive, Tech Developer, Teacher/Educator, Chef/Restaurant Worker, Retail Associate, Creative Professional, Fitness Trainer, Customer Service Rep",
-            "environment": "one of: none, Modern Office, Home Office, Coffee Shop, Retail Store, Medical Facility, Construction Site, Classroom, Restaurant Kitchen, Gym/Fitness Center, Call Center",
+            "personArchetype": "one of: none, Accounting Professional, Administrative Assistant, Arts & Design Professional, Business Development Manager, Community Services Worker, Consultant, Customer Success Manager, Educator, Engineer, Entrepreneur, Finance Professional, Healthcare Professional, HR Professional, IT Professional, Legal Professional, Marketing Specialist, Media & Communications Professional, Military/Security Professional, Operations Manager, Product Manager, Project Manager, Purchasing Professional, Quality Assurance Specialist, Real Estate Professional, Researcher, Sales Professional",
+            "environment": "one of: none, Accounting Office, Administrative Office, Design Studio, Corporate Boardroom, Community Center, Consulting Office, Customer Service Center, Classroom, Engineering Lab, Startup Office, Financial Institution, Hospital/Medical Facility, HR Department, Tech Workspace, Law Office, Marketing Agency, Media Studio, Security Command Center, Operations Floor, Product Development Lab, Project War Room, Procurement Office, Quality Control Lab, Real Estate Office, Research Laboratory, Sales Floor",
             "layout": "one of: centered, left-aligned, bottom-overlay"
           }`
         },
