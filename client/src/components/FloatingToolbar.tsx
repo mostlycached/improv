@@ -95,8 +95,6 @@ export default function FloatingToolbar({
     if (selectedElement?.type === 'title') {
       if (property === 'text') newAdData.title = value;
       else if (property === 'color') newAdData.primaryColor = value;
-    } else if (selectedElement?.type === 'subtitle') {
-      if (property === 'text') newAdData.subtitle = value;
     } else if (selectedElement?.type === 'cta') {
       if (property === 'text') newAdData.ctaText = value;
       else if (property === 'color') newAdData.accentColor = value;

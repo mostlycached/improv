@@ -185,10 +185,7 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     ctx.textAlign = 'center';
     ctx.fillText(adData.title, width / 2, height / 3);
 
-    // Subtitle
-    ctx.font = '24px Arial';
-    ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, width / 2, height / 2);
+
 
     // CTA Button
     ctx.fillStyle = adData.accentColor;
@@ -212,10 +209,7 @@ const FabricCanvas = forwardRef<any, FabricCanvasProps>(({ adData, onElementSele
     ctx.textAlign = 'left';
     ctx.fillText(adData.title, leftPadding, height / 4);
 
-    // Subtitle
-    ctx.font = '20px Arial';
-    ctx.fillStyle = '#333333';
-    ctx.fillText(adData.subtitle, leftPadding, height / 2);
+
 
     // CTA Button
     ctx.fillStyle = adData.accentColor;
