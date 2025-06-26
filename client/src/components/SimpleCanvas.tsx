@@ -60,6 +60,26 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     }
   };
 
+  // Helper function to wrap text
+  const wrapText = (ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = ctx.measureText(currentLine + ' ' + word).width;
+      if (width < maxWidth) {
+        currentLine += ' ' + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  };
+
   const renderLayoutElements = (ctx: CanvasRenderingContext2D) => {
     const width = 800;
     const height = 600;
@@ -86,23 +106,31 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
     // Clear text elements array
     textElementsRef.current = [];
 
-    // Title
+    // Title with text wrapping
     ctx.font = 'bold 64px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height / 2;
-    ctx.fillText(adData.title, width / 2, titleY);
     
-    // Store title element bounds
+    const titleLines = wrapText(ctx, adData.title, width - 100); // Leave 50px padding on each side
+    const lineHeight = 70;
+    const totalHeight = titleLines.length * lineHeight;
+    const startY = height / 2 - totalHeight / 2 + lineHeight / 2;
+    
+    titleLines.forEach((line, index) => {
+      const y = startY + (index * lineHeight);
+      ctx.fillText(line, width / 2, y);
+    });
+    
+    // Store title element bounds (using bounding box of all lines)
+    const titleMetrics = ctx.measureText(adData.title);
     textElementsRef.current.push({
       type: 'title',
       text: adData.title,
       x: width / 2 - titleMetrics.width / 2,
-      y: titleY - 32,
+      y: startY - lineHeight / 2,
       width: titleMetrics.width,
-      height: 64
+      height: totalHeight
     });
 
     // CTA Button
@@ -132,22 +160,31 @@ const SimpleCanvas = forwardRef<any, SimpleCanvasProps>(({ adData, onElementSele
   const renderLeftAlignedLayout = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     const leftPadding = 60;
 
-    // Title
+    // Title with text wrapping
     ctx.font = 'bold 56px Arial';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    const titleMetrics = ctx.measureText(adData.title);
-    const titleY = height / 2;
-    ctx.fillText(adData.title, leftPadding, titleY);
     
+    const titleLines = wrapText(ctx, adData.title, width - leftPadding - 60); // Leave padding on both sides
+    const lineHeight = 62;
+    const totalHeight = titleLines.length * lineHeight;
+    const startY = height / 2 - totalHeight / 2 + lineHeight / 2;
+    
+    titleLines.forEach((line, index) => {
+      const y = startY + (index * lineHeight);
+      ctx.fillText(line, leftPadding, y);
+    });
+    
+    // Store title element bounds
+    const maxLineWidth = Math.max(...titleLines.map(line => ctx.measureText(line).width));
     textElementsRef.current.push({
       type: 'title',
       text: adData.title,
       x: leftPadding,
-      y: titleY - 28,
-      width: titleMetrics.width,
-      height: 56
+      y: startY - lineHeight / 2,
+      width: maxLineWidth,
+      height: totalHeight
     });
 
     // CTA Button
